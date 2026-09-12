@@ -1,0 +1,3 @@
+event = "users.deleted"
+description = "Remove the deleted user's role assignments, username role, and role links"
+program = "the8020/auth/user-deleted"

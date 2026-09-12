@@ -1,0 +1,8 @@
+version = 1
+command = "auth.users.unassign"
+program = "the8020/auth/command-unassign"
+summary = "Remove an explicit user assignment"
+description = "Remove an explicit user assignment."
+usage = "<username> <role>"
+mutates_state = true
+restart_behavior = "none"

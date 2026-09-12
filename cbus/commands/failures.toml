@@ -1,0 +1,8 @@
+version = 1
+command = "auth.failures.list"
+program = "the8020/auth/command-failures"
+summary = "List the latest failed checks"
+description = "List the latest failed checks."
+usage = "[username]"
+mutates_state = false
+restart_behavior = "none"

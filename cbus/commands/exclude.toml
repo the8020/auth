@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.exclude"
+program = "the8020/auth/command-exclude"
+summary = "Remove a role inclusion"
+description = "Remove a role inclusion."
+usage = "<role> <included-role>"
+mutates_state = true
+restart_behavior = "none"

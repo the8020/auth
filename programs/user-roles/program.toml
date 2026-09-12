@@ -1,0 +1,4 @@
+schema = 1
+uui = true
+discoverable = false
+description = "Manage roles assigned to a user"

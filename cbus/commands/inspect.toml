@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.inspect"
+program = "the8020/auth/command-inspect"
+summary = "Inspect a role"
+description = "Inspect a role."
+usage = "<role>"
+mutates_state = false
+restart_behavior = "none"

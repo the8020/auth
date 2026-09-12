@@ -1,0 +1,8 @@
+version = 1
+command = "auth.users.roles"
+program = "the8020/auth/command-user-roles"
+summary = "List a user's direct and automatic roles"
+description = "List a user's direct and automatic roles."
+usage = "<username>"
+mutates_state = false
+restart_behavior = "none"

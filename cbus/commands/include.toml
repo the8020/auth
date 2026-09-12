@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.include"
+program = "the8020/auth/command-include"
+summary = "Include another role"
+description = "Include another role."
+usage = "<role> <included-role>"
+mutates_state = true
+restart_behavior = "none"

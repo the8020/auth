@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.users"
+program = "the8020/auth/command-role-users"
+summary = "List directly assigned users"
+description = "List directly assigned users."
+usage = "<role>"
+mutates_state = false
+restart_behavior = "none"

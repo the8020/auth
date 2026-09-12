@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.create"
+program = "the8020/auth/command-create"
+summary = "Create a role"
+description = "Create a role."
+usage = "<role> [--description <text>] [--permissions <json>] [--if-missing]"
+mutates_state = true
+restart_behavior = "none"

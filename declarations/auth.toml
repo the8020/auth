@@ -1,0 +1,8 @@
+"auth.failures.view" = "Read failed authorization checks; value is username or empty for all users."
+"auth.roles.assign" = "Assign or include a role; value is the granted role name."
+"auth.roles.delete" = "Delete a role and its assignments; value is role name."
+"auth.roles.edit" = "Create a role or change its permissions and inclusions; value is role name."
+"auth.roles.list" = "List role names and descriptions; value is empty."
+"auth.roles.view" = "View a role, its permissions, inclusions and direct users; value is role name."
+"auth.users.edit" = "Change explicit user role assignments; value is username."
+"auth.users.view" = "View a user's direct and automatic roles; value is username."

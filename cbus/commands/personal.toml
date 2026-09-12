@@ -1,0 +1,8 @@
+version = 1
+command = "auth.users.personal"
+program = "the8020/auth/command-personal"
+summary = "Create a username role if missing"
+description = "Create a username role if missing."
+usage = "<username>"
+mutates_state = true
+restart_behavior = "none"

@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.delete"
+program = "the8020/auth/command-delete"
+summary = "Delete a role and its assignments"
+description = "Delete a role and its assignments."
+usage = "<role> --confirm"
+mutates_state = true
+restart_behavior = "none"

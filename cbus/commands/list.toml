@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.list"
+program = "the8020/auth/command-list"
+summary = "List roles"
+description = "List roles."
+usage = ""
+mutates_state = false
+restart_behavior = "none"

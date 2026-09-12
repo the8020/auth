@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.revoke"
+program = "the8020/auth/command-revoke"
+summary = "Remove an action permission"
+description = "Remove an action permission."
+usage = "<role> <action>"
+mutates_state = true
+restart_behavior = "none"

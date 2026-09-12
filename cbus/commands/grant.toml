@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.grant"
+program = "the8020/auth/command-grant"
+summary = "Set an action permission"
+description = "Set an action permission."
+usage = "<role> <action> <values>"
+mutates_state = true
+restart_behavior = "none"
