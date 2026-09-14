@@ -185,6 +185,12 @@ No child DOX documents.
 
 # Work Guidance
 
+- Build only what the request and established contracts require. Before adding a
+  mechanism, identify that need and why existing owners or standard tools cannot
+  meet it. Do not invent stronger guarantees for hypothetical cases. Remove
+  unsupported additions at closeout; agent-written tests and DOX do not
+  authorize them. Preserve required correctness, security, and data integrity.
+
 - Keep checks at application mutation owners. Reuse Kysely, Zod, TOML, and UUI.
 - Use bounded queries and cycle-safe traversal without permission caches.
 

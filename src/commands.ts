@@ -1,8 +1,8 @@
+import { AdminCommandError } from "@the8020/kernel";
 import {
-  AdminCommandError,
   parseCommandArguments,
   requiredCommandArgument,
-} from "@the8020/kernel";
+} from "/p/the8020/packages/commands.ts";
 import * as admin from "./admin.ts";
 
 export async function command(operation: string, args: string[]) {

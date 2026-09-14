@@ -1,6 +1,6 @@
 import { AdminCommandError } from "@the8020/kernel";
 import { type Database, db } from "/p/the8020/db/mod.ts";
-import type { Transaction } from "kysely";
+import type { Transaction } from "/p/the8020/db/kysely.ts";
 import { z } from "/p/the8020/db/fields.ts";
 import Users from "/p/the8020/users/tables/users.ts";
 import { requirePermission } from "./check.ts";
