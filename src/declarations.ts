@@ -1,5 +1,4 @@
-// deno-lint-ignore no-import-prefix
-import { parse } from "jsr:@std/toml@1.0.11";
+import { parse } from "/p/the8020/packages/toml.ts";
 import { action, role } from "../types/auth.ts";
 
 /** Advisory declarations never constrain the keys accepted by authorization. */
