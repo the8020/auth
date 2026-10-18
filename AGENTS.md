@@ -124,6 +124,10 @@ No child DOX documents.
 
 # Local Contracts
 
+- Role, permission, inclusion, and assignment creation plus list refresh/paging
+  live in their owning list toolbars. Entity navigation, edits, and confirmation
+  actions stay in screen headers.
+
 - `check(action, value)` returns a boolean; `requirePermission(action, value)`
   throws `AuthorizationError` with code `forbidden`. Inputs are strings; no API
   parameter can replace the trusted checking user. Anonymous services use their

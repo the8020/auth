@@ -71,6 +71,10 @@ export async function roles(selected?: string): Promise<void> {
         schema: 1,
         id: "auth-roles",
         root: {
+          toolbar: [{ id: "add", label: "Create role", kind: "primary" }, {
+            id: "refresh",
+            label: "Refresh",
+          }],
           type: "list",
           bind: "roles",
           key: "name",
@@ -78,10 +82,10 @@ export async function roles(selected?: string): Promise<void> {
         },
       },
       header: {
-        actions: [{ id: "add", label: "Create role", kind: "primary" }, {
+        actions: [{
           id: "failures",
           label: "Failed checks",
-        }, { id: "refresh", label: "Refresh" }],
+        }],
       },
     });
     if (event.action === BACK_EVENT) return;
@@ -169,6 +173,11 @@ async function roleDetail(name: string): Promise<void> {
           children: [
             { type: "detail", controls: ["name", "description"] },
             {
+              toolbar: [{
+                id: "permission",
+                label: "Add permission",
+                kind: "primary",
+              }],
               type: "list",
               title: "Permissions",
               bind: "entries",
@@ -180,7 +189,6 @@ async function roleDetail(name: string): Promise<void> {
       },
       header: {
         actions: [
-          { id: "permission", label: "Add permission", kind: "primary" },
           { id: "included", label: "Included roles" },
           { id: "users", label: "Users" },
           { id: "edit", label: "Edit role" },
@@ -282,17 +290,15 @@ async function includedRoles(name: string): Promise<void> {
         schema: 1,
         id: "auth-includes",
         root: {
+          toolbar: [{ id: "add", label: "Include role", kind: "primary" }, {
+            id: "refresh",
+            label: "Refresh",
+          }],
           type: "list",
           bind: "roles",
           key: "included",
           display: ["included"],
         },
-      },
-      header: {
-        actions: [{ id: "add", label: "Include role", kind: "primary" }, {
-          id: "refresh",
-          label: "Refresh",
-        }],
       },
     });
     if (event.action === BACK_EVENT) return;
@@ -348,6 +354,10 @@ export async function userRoles(name: string): Promise<void> {
         schema: 1,
         id: "auth-user-roles",
         root: {
+          toolbar: [{ id: "add", label: "Assign role", kind: "primary" }, {
+            id: "personal",
+            label: "Personal permissions",
+          }, { id: "refresh", label: "Refresh" }],
           type: "list",
           bind: "roles",
           key: "role",
@@ -355,13 +365,10 @@ export async function userRoles(name: string): Promise<void> {
         },
       },
       header: {
-        actions: [
-          { id: "add", label: "Assign role", kind: "primary" },
-          { id: "personal", label: "Personal permissions" },
-          { id: "user", label: "Open user" },
-          { id: "failures", label: "Failed checks" },
-          { id: "refresh", label: "Refresh" },
-        ],
+        actions: [{ id: "user", label: "Open user" }, {
+          id: "failures",
+          label: "Failed checks",
+        }],
       },
     });
     if (event.action === BACK_EVENT) return;
@@ -436,17 +443,15 @@ async function roleUsers(name: string): Promise<void> {
         schema: 1,
         id: "auth-role-users",
         root: {
+          toolbar: [{ id: "add", label: "Assign user", kind: "primary" }, {
+            id: "refresh",
+            label: "Refresh",
+          }],
           type: "list",
           bind: "users",
           key: "username",
           display: ["username", "automatic"],
         },
-      },
-      header: {
-        actions: [{ id: "add", label: "Assign user", kind: "primary" }, {
-          id: "refresh",
-          label: "Refresh",
-        }],
       },
     });
     if (event.action === BACK_EVENT) return;
@@ -515,20 +520,18 @@ export async function failures(name?: string): Promise<void> {
         schema: 1,
         id: "auth-failures",
         root: {
+          toolbar: [
+            { id: "refresh", label: "Refresh" },
+            ...(offset ? [{ id: "previous", label: "Previous 100" }] : []),
+            ...(model.data.failures.length === 100
+              ? [{ id: "next", label: "Next 100" }]
+              : []),
+          ],
           type: "list",
           bind: "failures",
           key: "id",
           display: ["checkedAt", "username", "action", "value", "reason"],
         },
-      },
-      header: {
-        actions: [
-          { id: "refresh", label: "Refresh" },
-          ...(offset ? [{ id: "previous", label: "Previous 100" }] : []),
-          ...(model.data.failures.length === 100
-            ? [{ id: "next", label: "Next 100" }]
-            : []),
-        ],
       },
     });
     if (event.action === BACK_EVENT) return;

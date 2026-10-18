@@ -20,6 +20,7 @@ export async function authDatabase() {
       "auth/tables/failures",
       "users/tables/users",
       "users/tables/sessions",
+      "users/tables/certificates",
       "system/tables/settings",
     ]
   ) {
