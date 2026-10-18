@@ -194,6 +194,15 @@ No child DOX documents.
 - Keep checks at application mutation owners. Reuse Kysely, Zod, TOML, and UUI.
 - Use bounded queries and cycle-safe traversal without permission caches.
 
+## UI Rules
+
+- Do not add explanatory helper copy that restates what the control already
+  implies (e.g. "optional", "works without selection", "failure falls back to
+  X"). Prefer clear labels and option text; surface status in results when
+  needed, not as instructional paragraphs under every field.
+- Keep UI copy concise. Avoid tutorial-style descriptions unless the user
+  explicitly asks for onboarding help.
+
 # Verification
 
 - `deno task test:browser` uses the existing UUI Chromium harness with real
