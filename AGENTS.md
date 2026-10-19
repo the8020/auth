@@ -209,6 +209,9 @@ No child DOX documents.
 
 # Verification
 
+- Run package tasks inside an 80|20 Deno workspace; its root config supplies
+  platform imports. The package config owns dependencies and tasks.
+
 - `deno task test:browser` uses the existing UUI Chromium harness with real
   screens and SQLite, covering user-role navigation, lazy personal roles,
   permission edits, inclusions, assignments, failed-check evidence, and mobile
