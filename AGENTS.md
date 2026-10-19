@@ -115,6 +115,8 @@ No child DOX documents.
 
 # Ownership
 
+- `widgets/` declares this package's Home tiles and categories through the
+  `the8020/packages/widgets.ts` format.
 - `mod.ts` exposes checks; `src/` owns matching, role operations, declaration
   discovery, commands, and screens. `types/` owns shared semantic fields.
 - `tables/` owns roles, nested role links, user assignments, and denied checks.

@@ -1,0 +1,9 @@
+schema = 1
+title = "Roles"
+description = "Manage authorization roles and permissions"
+icon = "admin_panel_settings"
+category = "administration"
+order = 20
+
+[open]
+program = "the8020/auth/roles"

@@ -1,0 +1,9 @@
+schema = 1
+title = "Access denials"
+description = "Review failed authorization checks"
+icon = "gpp_bad"
+category = "administration"
+order = 30
+
+[open]
+program = "the8020/auth/failures"
