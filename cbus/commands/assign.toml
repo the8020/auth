@@ -2,7 +2,7 @@ version = 1
 command = "auth.users.assign"
 program = "the8020/auth/command-assign"
 summary = "Assign a role to a user"
-description = "Assign a role to a user."
-usage = "<username> <role>"
+description = "Assign a role to a user. Attribute values bind the role's attribute references for this assignment; repeating the assignment with attributes replaces them."
+usage = "<username> <role> [--attribute name=values]... [--attribute-comparisons name=values]..."
 mutates_state = true
 restart_behavior = "none"

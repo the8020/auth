@@ -1,0 +1,5 @@
+name = "Remove expired authorization audit records"
+program = "the8020/auth/audit-cleanup"
+
+[schedule.recurrence]
+times = ["03:00"]

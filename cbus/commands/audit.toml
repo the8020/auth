@@ -1,0 +1,8 @@
+version = 1
+command = "auth.audit.list"
+program = "the8020/auth/command-audit"
+summary = "List the latest audited successful checks"
+description = "List the latest audited successful checks."
+usage = "[username]"
+mutates_state = false
+restart_behavior = "none"

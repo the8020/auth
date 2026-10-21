@@ -1,0 +1,4 @@
+schema = 1
+description = "Synchronize package-declared authorization roles"
+entrypoint = "program.ts"
+discoverable = false

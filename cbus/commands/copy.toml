@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.copy"
+program = "the8020/auth/command-copy"
+summary = "Copy a role"
+description = "Copy a role under a new name. Copies of package-managed roles remember their template and can adopt its later changes."
+usage = "<role> <new-role>"
+mutates_state = true
+restart_behavior = "none"

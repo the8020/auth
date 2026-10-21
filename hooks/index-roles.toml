@@ -1,0 +1,3 @@
+hook = "index-packages"
+description = "Synchronize the selected packages' declared authorization roles and audit flags"
+program = "the8020/auth/index-roles"

@@ -1,0 +1,4 @@
+schema = 1
+description = "Rename platform actions in stored roles"
+entrypoint = "program.ts"
+discoverable = false

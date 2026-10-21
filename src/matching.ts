@@ -44,7 +44,20 @@ export function pattern(source: string): (value: string) => boolean {
 }
 
 export const numeric = /^-?\d+(?:\.\d+)?$/;
+/** A value expression in the existing grammar. */
 export type PermissionValues = string | { comparisons: string };
+/** A role entry whose values come from the assignment that reached the role. */
+export type AttributeReference = { attribute: string };
+/** What a role entry stores: an expression or an attribute reference. */
+export type RoleEntryValues = PermissionValues | AttributeReference;
+
+export function isAttributeReference(
+  values: unknown,
+): values is AttributeReference {
+  return typeof values === "object" && values !== null &&
+    !Array.isArray(values) && Object.keys(values).length === 1 &&
+    typeof (values as { attribute?: unknown }).attribute === "string";
+}
 export type Comparison = ">" | ">=" | "<" | "<=";
 export type ValueTerm =
   | { kind: "pattern"; source: string }

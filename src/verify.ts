@@ -42,3 +42,59 @@ export async function filter<T extends object>(
     })
   );
 }
+
+/**
+ * Whether any reachable role entry can grant the action for some value, for
+ * menus and tiles. Like `verify`, it never audits. Enforcement still checks
+ * the actual value.
+ */
+export async function permitsAny(
+  username: string,
+  action: string,
+): Promise<boolean> {
+  const policy = (await permissionsFor(username, [action])).get(action)!;
+  if (policy.bypass) return true;
+  if (policy.reason === "role_limit") return false;
+  return policy.entries.some((entry) =>
+    entry.terms?.some((term) => !term.excluded) ?? false
+  );
+}
+
+/** Upper bound on accounts one `usersWithPermission` call evaluates. */
+const MAX_USERS = 10_000;
+
+/**
+ * Enabled accounts whose roles grant the action for the value, sorted, for
+ * notifications and assignment pickers. Like `verify`, it never audits and
+ * never consults the caller's own permissions; `system` is not an account.
+ */
+export async function usersWithPermission(
+  action: string,
+  value: string,
+): Promise<string[]> {
+  valueField.parse(value);
+  const [{ db }, { default: Users }] = await Promise.all([
+    import("/p/the8020/db/mod.ts"),
+    import("/p/the8020/users/tables/users.ts"),
+  ]);
+  const accounts = await db.selectFrom(Users.table).select("username").where(
+    "enabled",
+    "=",
+    true,
+  ).orderBy("username").limit(MAX_USERS + 1).execute();
+  if (accounts.length > MAX_USERS) {
+    throw new RangeError(`More than ${MAX_USERS} accounts to evaluate`);
+  }
+  const granted: string[] = [];
+  // A few accounts at a time keeps the role traversals bounded.
+  for (let offset = 0; offset < accounts.length; offset += 8) {
+    const batch = accounts.slice(offset, offset + 8);
+    const results = await Promise.all(
+      batch.map(({ username }) => verify(username, action, value)),
+    );
+    batch.forEach(({ username }, index) => {
+      if (results[index]) granted.push(username);
+    });
+  }
+  return granted;
+}

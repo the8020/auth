@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.changes"
+program = "the8020/auth/command-changes"
+summary = "Show template changes"
+description = "List differences between a copied role and its package template."
+usage = "<role>"
+mutates_state = false
+restart_behavior = "none"

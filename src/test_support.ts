@@ -19,6 +19,8 @@ export async function authDatabase() {
       "auth/tables/user_roles",
       "auth/tables/role_includes",
       "auth/tables/failures",
+      "auth/tables/grants",
+      "auth/tables/audit_flags",
       "users/tables/users",
       "users/tables/sessions",
       "users/tables/certificates",

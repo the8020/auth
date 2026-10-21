@@ -1,0 +1,4 @@
+schema = 1
+description = "Remove audited successes and denials older than the audit retention"
+entrypoint = "program.ts"
+discoverable = false

@@ -2,6 +2,28 @@ import { field, z } from "/p/the8020/db/fields.ts";
 import { username } from "/p/the8020/users/types/user.ts";
 import { expression, pattern } from "../src/matching.ts";
 
+/** Same character set as declared action names; attributes never use patterns. */
+export const attributeName: z.ZodString = field(
+  z.string().min(1).max(512).regex(/^[A-Za-z0-9][A-Za-z0-9._-]*$/),
+  {
+    label: "Attribute",
+    description:
+      "A declared authorization attribute, such as `dlis.einvoice.channel`. Its values come from each role assignment.",
+    valueHelp: async (request) => {
+      const { attributeDeclarations } = await import("../src/declarations.ts");
+      const { queryValueHelp } = await import("/p/the8020/uui/lists.ts");
+      return queryValueHelp(
+        z.object({
+          attribute: attributeName,
+          description: role.shape.description,
+        }),
+        await attributeDeclarations(),
+        request,
+      );
+    },
+  },
+);
+
 export const roleName: z.ZodString = field(
   z.string().min(1).max(200).refine((value) => !/[\p{Cc}]/u.test(value)),
   {
@@ -50,7 +72,8 @@ const valueExpression = field(
       "Comma-separated values, inclusive ranges, `*`/`?` patterns and `!` exclusions. Enable Comparisons to use `>`, `>=`, `<`, `<=`; `!>`, `!>=`, `!<`, `!<=` then mean `<=`, `<`, `>=`, `>` and grant on their own. Numeric endpoints compare exact decimals; other endpoints compare case-sensitive text. Example with Comparisons enabled: `>=7000,!8000-8200`. Escape leading comparison punctuation for literals in that mode. With Comparisons off, `<` and `>` keep their literal meaning.",
   },
 );
-export const values = z.union([
+/** A value expression: plain or `{ comparisons }`; valid in roles and assignments. */
+export const expressionValues = z.union([
   valueExpression,
   z.object({ comparisons: valueExpression }).strict(),
 ]).superRefine((source, ctx) => {
@@ -60,6 +83,24 @@ export const values = z.union([
     ctx.addIssue({ code: "custom", message: String(error) });
   }
 });
+/** What a role entry stores: an expression, or an attribute bound by assignment. */
+export const values = z.union([
+  expressionValues,
+  z.object({ attribute: attributeName }).strict(),
+]);
+/** Attribute values given to one role assignment. */
+export const assignmentAttributes = field(
+  z.record(attributeName, expressionValues).refine(
+    (value) => Object.keys(value).length <= 64,
+    "An assignment supports up to 64 attributes",
+  ),
+  {
+    label: "Attribute values",
+    description:
+      "Values for the attributes referenced by the assigned role and the roles it includes, for example `dlis.einvoice.channel` = `SK,CZ`.",
+    storage: { type: "json" },
+  },
+);
 export const permission = z.object({
   action,
   values: valueExpression,
@@ -93,7 +134,44 @@ export const role = z.object({
   }),
   permissions,
 });
-export const assignment = z.object({ username, role: roleName });
+/** Where a package-declared role or a copy of one comes from. */
+export const roleOrigin = {
+  managed: field(z.string().max(200), {
+    label: "Managed by",
+    description:
+      "The package that declares this role. Only its declaration changes the role; copy it to make your own version.",
+  }),
+  managedCommit: field(z.string().max(64), {
+    label: "Package commit",
+    description: "The package commit whose declaration the role matches.",
+  }),
+  collection: field(z.boolean(), {
+    label: "Collection",
+    description: "Groups other roles through inclusion.",
+  }),
+  obsolete: field(z.boolean(), {
+    label: "Obsolete",
+    description:
+      "No longer declared by its package; kept while users or roles still use it.",
+  }),
+  copiedFrom: field(
+    z.object({
+      role: roleName,
+      package: z.string().max(200),
+      commit: z.string().max(64),
+    }),
+    {
+      label: "Copied from",
+      description: "The package role and commit this role was copied from.",
+      storage: { type: "json" },
+    },
+  ),
+};
+export const assignment = z.object({
+  username,
+  role: roleName,
+  attributes: assignmentAttributes.default({}),
+});
 export const inclusion = z.object({ role: roleName, included: roleName });
 export const failure = z.object({
   id: field(z.string(), {
@@ -125,4 +203,23 @@ export const failure = z.object({
       storage: { type: "json" },
     },
   ),
+});
+
+/** One audited successful authorization check. */
+export const grant = z.object({
+  id: field(z.string(), {
+    label: "Check ID",
+    description: "Identifies this successful authorization check.",
+  }),
+  username,
+  action,
+  value,
+  checkedAt: field(z.date(), {
+    label: "Checked at",
+    description: "When access was granted (UTC).",
+  }),
+  role: field(z.string(), {
+    label: "Granted by",
+    description: "The first reachable role whose entry allowed the check.",
+  }),
 });

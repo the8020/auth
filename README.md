@@ -128,6 +128,38 @@ commands retain the original grammar. The editor displays and preserves each
 entry's mode, including when saving an existing entry without changing it.
 Changing that mode explicitly changes how the entry is interpreted.
 
+## Attribute values on assignments
+
+One role can serve any channel, state or company: its entry refers to an
+**attribute**, and each assignment supplies that attribute's values. Declare
+attributes next to actions in `declarations/auth-attributes.toml`:
+
+```toml
+"dlis.einvoice.channel" = "eInvoice channel code (SK, DE, FR); empty value means documents without a channel."
+```
+
+Reference the attribute in a role entry and give values when assigning:
+
+```sh
+auth.roles.create dlis.einvoice.viewer
+auth.roles.grant dlis.einvoice.viewer dlis.einvoice.documents.view dlis.einvoice.channel --attribute
+auth.users.assign novak dlis.einvoice.viewer --attribute dlis.einvoice.channel=SK,CZ
+# Comparisons for one attribute: --attribute-comparisons dlis.einvoice.limit=<=10000
+```
+
+Stored entries are `{ attribute: "dlis.einvoice.channel" }`; assignment values
+use the ordinary value grammar or `{ comparisons }`. Roles included by the
+assigned role use the same values. Values stay with their assignment: a user who
+approves `SK` through one assignment and only views `CZ` through another cannot
+approve `CZ`. An attribute without a value on the assignment grants nothing.
+Repeating `auth.users.assign` with attributes replaces them; without attributes
+it keeps them. In **Roles for <user>**, open an assignment and choose
+**Attribute values**; assigning a role that refers to attributes opens that
+editor directly.
+
+For menus and tiles, `permitsAny(username, action)` answers whether the user can
+perform the action for at least one value, without writing an audit record.
+
 In comparison mode, use `>10`, `>=10`, `<10`, or `<=10`. The convenience forms
 `!>10`, `!>=10`, `!<10`, and `!<=10` normalize to `<=10`, `<10`, `>=10`, and
 `>10`. They are **positive grants**, even on their own; `*,!>10` therefore still
@@ -170,15 +202,19 @@ to use ordinary `events/*.toml` declarations. See
 
 The first protected application APIs are user, service, and package mutations.
 Native operations and uninstrumented applications retain their existing
-authority. Docker bootstrap creates role `**`, grants `"*" = "*"`, and assigns
-it to the new administrator. For an existing deployment, run the same commands
-through the native administrator console, replacing `admin` with its username:
+authority. Docker bootstrap assigns the new administrator the managed role
+`the8020.users.administrator` (`"*" = "*"`), falling back to a role `**` with
+the same permission on older users packages. For an existing deployment, assign
+the role through the native administrator console, replacing `admin` with its
+username:
 
 ```sh
-auth.roles.create '**' --if-missing
-auth.roles.grant '**' '*' '*'
-auth.users.assign admin '**'
+auth.users.assign admin the8020.users.administrator
 ```
+
+Package-declared roles (`declarations/auth-roles.toml`), assignment attributes,
+Home tile visibility and the success audit with its retention are described in
+the [DOX contract](AGENTS.md).
 
 Run `deno task check`, `deno task test`, and `deno task test:browser` from this
 repository. `deno task test:postgres` additionally executes the shared
@@ -190,3 +226,35 @@ through the SQLite bridge; the PostgreSQL check executes the production
 predicate compiler's output against PostgreSQL. The browser check reuses the
 sibling UUI Chromium harness. The [DOX contract](AGENTS.md) records API
 ownership and resource limits.
+
+## Package-declared roles
+
+Packages ship their roles in `declarations/auth-roles.toml`, named with the
+package prefix (`dlis/einvoice` → `dlis.einvoice.`):
+
+```toml
+["dlis.einvoice.viewer"]
+description = "View documents and their log in your channels."
+permissions = { "dlis.einvoice.documents.view" = { attribute = "dlis.einvoice.channel" } }
+
+["dlis.einvoice.user"]
+description = "eInvoice channel user."
+collection = true
+includes = ["dlis.einvoice.viewer", "dlis.einvoice.approver"]
+```
+
+Activating the package creates or updates these roles; no hook code or private
+auth import is needed. They show **Managed by** in Roles and cannot be edited
+there: assign them, include them in your own collections, or use **Copy role**.
+A copy is an ordinary role that remembers its template; its **Changes in the
+template** list shows what the package has added, removed or changed since, and
+**Adopt template changes** takes them over. From the command line:
+
+```sh
+auth.roles.copy dlis.einvoice.user my-einvoice-user
+auth.roles.changes my-einvoice-user
+auth.roles.adopt my-einvoice-user
+```
+
+A role the package stops declaring is kept as **Obsolete** while users or roles
+still use it, and removed once unused.

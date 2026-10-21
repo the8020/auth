@@ -124,12 +124,12 @@ Deno.test("real role operations, trusted checks, denials and mutation boundaries
     await admin.setPermission("alice", "sales.customer.edit", "8100");
     await admin.setPermission(
       "alice",
-      "services.service.restart",
+      "the8020.services.service.restart",
       "acme/example/api",
     );
     await admin.setPermission(
       "alice",
-      "packages.package.delete",
+      "the8020.packages.package.delete",
       "acme/example",
     );
     assertEquals(
@@ -231,7 +231,9 @@ Deno.test({
   name: "declarations scan installed namespaces and sort advisory keys",
   permissions: { read: true, write: true },
   async fn() {
-    const { declarations } = await import("./declarations.ts");
+    const { attributeDeclarations, declarations } = await import(
+      "./declarations.ts"
+    );
     const root = await Deno.makeTempDir();
     try {
       await Deno.mkdir(`${root}/acme/one/declarations`, { recursive: true });
@@ -244,6 +246,14 @@ Deno.test({
         action: "sales.a.view",
         description: "View A",
       }, { action: "sales.z.edit", description: "Edit Z" }]);
+      await Deno.writeTextFile(
+        `${root}/acme/one/declarations/auth-attributes.toml`,
+        '"sales.region" = "Sales region code"\n',
+      );
+      assertEquals(
+        await attributeDeclarations(new URL(`file://${root}/`)),
+        [{ attribute: "sales.region", description: "Sales region code" }],
+      );
     } finally {
       await Deno.remove(root, { recursive: true });
     }

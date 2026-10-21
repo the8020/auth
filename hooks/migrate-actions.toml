@@ -1,0 +1,3 @@
+hook = "post-activate"
+description = "Rename platform permission actions in stored roles to their the8020 namespace"
+program = "the8020/auth/migrate-actions"

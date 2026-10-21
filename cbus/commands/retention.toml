@@ -1,0 +1,8 @@
+version = 1
+command = "auth.audit.retention"
+program = "the8020/auth/command-retention"
+summary = "Show or change the audit retention"
+description = "Show, or with a number of days (1–3650) change, how long audited successes and denials are kept."
+usage = "[days]"
+mutates_state = true
+restart_behavior = "none"

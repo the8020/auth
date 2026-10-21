@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.adopt"
+program = "the8020/auth/command-adopt"
+summary = "Adopt template changes"
+description = "Replace a copied role's permissions and inclusions with its package template's current ones."
+usage = "<role>"
+mutates_state = true
+restart_behavior = "none"

@@ -12,15 +12,32 @@ export class AuthorizationError extends AdminCommandError {
   }
 }
 
-/** Check the current execution user, including inherited roles; audit every denial. */
+/**
+ * Check the current execution user, including inherited roles. Every denial is
+ * audited; a success is audited when `audited(action)` says so.
+ */
 export async function check(action: string, value: string): Promise<boolean> {
   actionField.parse(action);
   valueField.parse(value);
   const username = context.username;
   if (username === "system") return true;
   const policy = (await permissionsFor(username, [action], true)).get(action)!;
-  const { allowed, reason, details } = evaluate(policy, value, true);
-  if (allowed) return true;
+  const { allowed, reason, details, role } = evaluate(policy, value, true);
+  if (allowed) {
+    const { audited } = await import("./declarations.ts");
+    if (await audited(action)) {
+      const { default: Grants } = await import("../tables/grants.ts");
+      await Grants.insert({
+        id: crypto.randomUUID(),
+        username,
+        action,
+        value,
+        checkedAt: new Date(),
+        role: role ?? "",
+      }).execute();
+    }
+    return true;
+  }
   const { default: Failures } = await import("../tables/failures.ts");
   await Failures.insert({
     id: crypto.randomUUID(),

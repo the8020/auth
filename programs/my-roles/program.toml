@@ -1,0 +1,4 @@
+schema = 1
+description = "View your own roles"
+discoverable = false
+uui = true

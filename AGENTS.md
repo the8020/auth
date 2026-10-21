@@ -116,14 +116,27 @@ No child DOX documents.
 # Ownership
 
 - `widgets/` declares this package's Home tiles and categories through the
-  `the8020/packages/widgets.ts` format.
+  `the8020/packages/widgets.ts` format; tiles are visible with
+  `the8020.auth.roles.list` and `the8020.auth.failures.view`.
 - `mod.ts` exposes enforcement, verification, array filtering and SQL
   predicates; `src/` owns shared parsing/evaluation, role operations,
   declaration discovery, commands, and screens. `types/` owns shared semantic
   fields.
-- `tables/` owns roles, nested role links, user assignments, and denied checks.
+- `tables/` owns roles, nested role links, user assignments, denied checks,
+  audited successful checks (`grants`) and indexed audit flags.
+- `src/audit.ts` owns the audit log, its retention and cleanup;
+  `jobs/cleanup-audit.toml` runs `the8020/auth/audit-cleanup` daily at 03:00.
 - `programs/` and `cbus/commands/` expose ordinary management entrypoints.
 - `events/` subscribes to user deletion; auth owns cleanup of its role data.
+- `hooks/index-roles.toml` joins the `index-packages` chain;
+  `src/role_declarations.ts` reads and synchronizes package-declared roles and
+  the `audit` flags of each package's own actions (`auth.toml` table entries
+  whose action starts with the package prefix; others are reported problems).
+- `hooks/migrate-actions.toml` (`post-activate`) runs `src/migrations.ts`:
+  stored role keys whose first segment is a platform package (`auth`,
+  `deployments`, `https`, `packages`, `services`, `system`, `users`) gain the
+  `the8020.` prefix, including patterns. It is idempotent; an existing
+  namespaced key wins over its old form. Failure history keeps old names.
 - Kernel principals and authentication remain with their existing owners.
 
 # Local Contracts
@@ -142,7 +155,30 @@ No child DOX documents.
   explicit usernames, not `user:<name>` IDs or authentication. Unknown accounts
   deny even if orphan roles exist; `system` bypasses permission lookup. Callers
   own identity selection from trusted context. Keep enforcement callers on
-  `check`/`requirePermission`.
+  `check`/`requirePermission`. `permitsAny(username, action)` is the same kind
+  of unaudited query for menus and tiles: true when any reachable entry has a
+  positive term for the action (or for `system`); enforcement still checks the
+  actual value. `usersWithPermission(action, value)` returns the sorted enabled
+  accounts the action is granted to for the value (at most 10,000 evaluated,
+  otherwise `RangeError`); it is unaudited and does not check the caller.
+- `admin.ownRoles()` returns the trusted signed-in user's own roles with
+  descriptions and assignment attributes without a permission check;
+  `programs/my-roles` shows them read-only for My account. `userRoles(name)`
+  keeps requiring `the8020.auth.users.view`.
+- Audit: `check` records every denial in `failures` and, when `audited(action)`
+  holds, every success in `grants` with the first granting role. Audited by
+  default are platform (`the8020.`) operations other than `view`; other packages
+  opt in per action with `{ description, audit = true }` in `auth.toml`, and a
+  declared flag always wins (`the8020.auth.roles.list` sets `audit = false`).
+  Flags are read from the database (cached a minute per worker), never from
+  package files at check time. `system` is never audited.
+- Retention is the `auth.audit_retention_days` row in `the8020/system` settings
+  (1–3650, default 30), shared by successes and denials. Reading the audit and
+  the retention needs `the8020.auth.audit.view`; changing it and running cleanup
+  needs `the8020.auth.audit.edit`. Cleanup deletes expired rows in batches
+  of 1000. The Roles screen header offers Audit (list, paging and Change
+  retention); commands are `auth.audit.list [username]` and
+  `auth.audit.retention [days]`.
 - Array mapping keys are own properties and values are scalar action names; all
   mapped checks must pass. Require a nonempty mapping, preserve object identity
   and order in a new array, and deny missing/non-string/overlong values. Grants
@@ -157,8 +193,9 @@ No child DOX documents.
 - `src/evaluation.ts` owns bounded role aggregation and evaluation for every
   helper. Load once per invocation/batch, parse each entry once, preserve local
   exclusions and propagate operational errors. SQL captures grants at creation;
-  reconstruct for each operation. No persistent cache, schema migration, UDF, or
-  new dependency. Query engine limits propagate and never remove restrictions.
+  reconstruct for each operation. No persistent cache, UDF, or new dependency;
+  the `attributes` column is an ordinary additive table field defaulting to
+  `{}`. Query engine limits propagate and never remove restrictions.
 - `events/user-deleted.toml` subscribes to `users.deleted` with the ordinary
   `the8020/auth/user-deleted` program. It validates the event payload and calls
   auth-owned cleanup in an auth transaction, removing that user's assignments,
@@ -213,7 +250,25 @@ No child DOX documents.
 
 - Check the trusted execution username. `system` bypasses checks. Other users
   start with their username role plus explicit assignments; absent roles grant
-  nothing. Nested roles are additive and visited once, including cycles.
+  nothing. Nested roles are additive. Traversal visits each (role, attribute
+  binding) pair once, including cycles; the 10,000 cap counts these pairs.
+- A role entry may store `{ attribute: "<namespace>.<package>.<name>" }` instead
+  of a value expression. An assignment row carries `attributes`, a JSON map of
+  attribute names to expressions (plain or `{ comparisons }`, at most 64).
+  Traversal carries the binding of the assignment that reached each role;
+  included roles inherit it and the personal role has none. A reference takes
+  its expression from that binding before compilation; an unbound attribute
+  grants nothing and reports `unbound_attribute`. Values therefore stay
+  correlated with their assignment: SK for one role and CZ for another never
+  merge. SQL predicates substitute the same way per entry.
+- `assignRole(username, role, true, attributes)` replaces the assignment's
+  values; omitting `attributes` keeps them. `auth.users.assign` takes repeated
+  `--attribute name=values` and `--attribute-comparisons name=values`;
+  `auth.roles.grant … <attribute> --attribute` stores a reference.
+  `roleAttributes(role)` lists references in a role and its includes. Both
+  assignment screens (Roles for a user, and a role's Users) offer Attribute
+  values, editing values per attribute and saving them together; assigning a
+  role that references attributes opens that editor directly.
 - Roles have literal, case-sensitive names and a map of action patterns to value
   expressions. Each matching entry grants independently; exclusions apply only
   inside that entry. No role can override another role's grant.
@@ -227,10 +282,32 @@ No child DOX documents.
   access.
 - Create username roles lazily on personal-permission edits. Role management
   requires authorization and all mutations share `src/admin.ts`.
-- `declarations/auth.toml` maps quoted action IDs to descriptions. It is
-  advisory; free-form actions remain valid. Read installed package declarations
-  on demand in bounded concurrent batches and sort by action for ordinary UUI
-  value help.
+- Packages declare roles in `declarations/auth-roles.toml`: tables keyed by role
+  name with `description`, `permissions` (same entries as stored roles,
+  including `{ attribute }`), `collection` and `includes`. Names must start with
+  the package prefix `<namespace>.<package>.`; at most 256 roles and 64 includes
+  each. The `index-packages` handler makes the selected packages' roles match on
+  every activation and full reindex: it upserts declared roles with
+  `managed = <package ID>`, `managedCommit`, and replaces their inclusions;
+  missing included roles are reported, not created. A declared name held by a
+  hand-made or another package's role is reported and never taken over. Roles a
+  package no longer declares (or an inactive package's roles) become `obsolete`
+  while assigned or included, otherwise they are deleted. Problems go to the
+  package's index error; other roles still sync.
+- Managed roles are read-only to `saveRole`, `setPermission`, `deleteRole` and
+  gaining inclusions; they can be assigned and included in other roles.
+  `copyRole(source, target)` (`auth.roles.copy`) creates an ordinary role;
+  copying a managed role records `copiedFrom` (role, package, commit).
+  `templateChanges` (`auth.roles.changes`) lists added, removed and changed
+  permissions and inclusions against the template's current state;
+  `adoptTemplate` (`auth.roles.adopt`) replaces the copy's description, entries,
+  collection flag and inclusions and updates the recorded commit. `collection`
+  is display and filter metadata only; evaluation ignores it.
+- `declarations/auth.toml` maps quoted action IDs to descriptions and
+  `declarations/auth-attributes.toml` maps attribute names to descriptions of
+  their values. Both are advisory; free-form actions and attributes remain
+  valid. Read installed package declarations on demand in bounded concurrent
+  batches and sort by action for ordinary UUI value help.
 - Management uses owner-defined fields, normal UUI screens, and bidirectional
   user/role navigation. No browser components or authorization runtime exist.
 
