@@ -40,13 +40,18 @@ export async function command(operation: string, args: string[]) {
         role: await admin.getRole(arg(0, "role")),
         includes: await admin.includedRoles(arg(0, "role")),
       };
-    case "grant":
+    case "grant": {
+      const parsed = parseCommandArguments(args.slice(3), {
+        booleans: ["comparisons"],
+      });
+      const values = arg(2, "values");
       await admin.setPermission(
         arg(0, "role"),
         arg(1, "action"),
-        arg(2, "values"),
+        parsed.options.comparisons === true ? { comparisons: values } : values,
       );
       break;
+    }
     case "revoke":
       await admin.setPermission(arg(0, "role"), arg(1, "action"));
       break;

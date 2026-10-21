@@ -111,13 +111,56 @@ export default async function fixture() {
       await button(page, "Add permission");
       await title(page, "Permission · alice");
       await input(page, "action", "sales.customer.edit");
-      await input(page, "values", "7000-9000,!8000-8200");
+      await input(page, "values", "!<7000,!8000-8200");
+      await wait(
+        page,
+        `(() => {
+        const item = document.querySelector('input[data-bind="comparisons"]');
+        if (!item || item.disabled) return false;
+        if (!item.checked) item.click();
+        return true;
+      })()`,
+        "enable comparisons",
+      );
       await button(page, "Save permission");
       await title(page, "Role alice");
       assertEquals(
         (await admin.getRole("alice")).permissions["sales.customer.edit"],
-        "7000-9000,!8000-8200",
+        { comparisons: "!<7000,!8000-8200" },
       );
+      await row(page, "sales.customer.edit");
+      await title(page, "Permission · alice");
+      await wait(
+        page,
+        `document.querySelector('input[data-bind="comparisons"]')?.checked === true`,
+        "comparison mode survives reload",
+      );
+      await button(page, "Save permission");
+      await title(page, "Role alice");
+      await button(page, "Add permission");
+      await title(page, "Permission · alice");
+      await input(page, "action", "legacy.literal");
+      await input(page, "values", ">10");
+      await button(page, "Save permission");
+      await title(page, "Role alice");
+      await row(page, "legacy.literal");
+      await title(page, "Permission · alice");
+      await wait(
+        page,
+        `document.querySelector('input[data-bind="comparisons"]')?.checked === false`,
+        "legacy mode survives reload",
+      );
+      await button(page, "Save permission");
+      await title(page, "Role alice");
+      assertEquals(
+        (await admin.getRole("alice")).permissions["legacy.literal"],
+        ">10",
+      );
+      const { verify } = await import("./mod.ts");
+      assertEquals(await verify("alice", "legacy.literal", ">10"), true);
+      assertEquals(await verify("alice", "legacy.literal", "11"), false);
+      assertEquals(await verify("alice", "sales.customer.edit", "7000"), true);
+      assertEquals(await verify("alice", "sales.customer.edit", "8100"), false);
       await button(page, "Included roles");
       await title(page, "Included roles · alice");
       await button(page, "Include role");

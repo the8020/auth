@@ -154,7 +154,11 @@ async function roleDetail(name: string): Promise<void> {
     model.data.description = record.description;
     model.data.entries = Object.entries(record.permissions).map((
       [action, values],
-    ) => ({ action, values }));
+    ) => ({
+      action,
+      values: typeof values === "string" ? values : values.comparisons,
+      comparisons: typeof values !== "string",
+    }));
     const event = await callScreen({
       id: "auth-role",
       title: `Role ${name}`,
@@ -182,7 +186,7 @@ async function roleDetail(name: string): Promise<void> {
               title: "Permissions",
               bind: "entries",
               key: "action",
-              display: ["action", "values"],
+              display: ["action", "values", "comparisons"],
             },
           ],
         },
@@ -231,7 +235,7 @@ async function editPermission(
   existing?: z.infer<typeof permission>,
 ): Promise<void> {
   const model = new Model<Partial<z.infer<typeof permission>>>(
-    existing ? { ...existing } : {},
+    existing ? { ...existing } : { comparisons: false },
   );
   while (true) {
     const event = await callScreen({
@@ -242,7 +246,7 @@ async function editPermission(
       controls: [{ bind: "action", readOnly: !!existing, length: "long" }, {
         bind: "values",
         length: "long",
-      }],
+      }, { bind: "comparisons" }],
       header: {
         actions: [
           { id: "save", label: "Save permission", kind: "primary" },
@@ -260,7 +264,11 @@ async function editPermission(
     try {
       if (event.action === "save") {
         const data = permission.parse(model.data);
-        await admin.setPermission(name, data.action, data.values);
+        await admin.setPermission(
+          name,
+          data.action,
+          data.comparisons ? { comparisons: data.values } : data.values,
+        );
         return;
       }
       if (

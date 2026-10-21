@@ -42,21 +42,33 @@ export const value = field(z.string().max(2048), {
   label: "Value",
   description: "The single object identifier or value being authorized.",
 });
-export const values = field(
-  z.string().min(1).max(8192).superRefine((source, ctx) => {
-    try {
-      expression(source);
-    } catch (error) {
-      ctx.addIssue({ code: "custom", message: String(error) });
-    }
-  }),
+const valueExpression = field(
+  z.string().min(1).max(8192),
   {
     label: "Allowed values",
     description:
-      "Comma-separated values, inclusive numeric or alphabetical ranges, and `*`/`?` patterns. Prefix exceptions with `!`. Example: `7000-9000,25*,4444,3333,!8000-8200,!2577`. Exceptions apply only to this entry; another entry or role can grant access. Use `*` for all values and `\\-` for a literal hyphen.",
+      "Comma-separated values, inclusive ranges, `*`/`?` patterns and `!` exclusions. Enable Comparisons to use `>`, `>=`, `<`, `<=`; `!>`, `!>=`, `!<`, `!<=` then mean `<=`, `<`, `>=`, `>` and grant on their own. Numeric endpoints compare exact decimals; other endpoints compare case-sensitive text. Example with Comparisons enabled: `>=7000,!8000-8200`. Escape leading comparison punctuation for literals in that mode. With Comparisons off, `<` and `>` keep their literal meaning.",
   },
 );
-export const permission = z.object({ action, values });
+export const values = z.union([
+  valueExpression,
+  z.object({ comparisons: valueExpression }).strict(),
+]).superRefine((source, ctx) => {
+  try {
+    expression(source);
+  } catch (error) {
+    ctx.addIssue({ code: "custom", message: String(error) });
+  }
+});
+export const permission = z.object({
+  action,
+  values: valueExpression,
+  comparisons: field(z.boolean().default(false), {
+    label: "Comparisons",
+    description:
+      "Interpret leading `<`, `>`, `!<` and `!>` as comparison operators. Existing entries keep this off until explicitly changed.",
+  }),
+});
 export const permissions = field(
   z.record(
     action.superRefine((source, ctx) => {

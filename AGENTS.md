@@ -117,8 +117,10 @@ No child DOX documents.
 
 - `widgets/` declares this package's Home tiles and categories through the
   `the8020/packages/widgets.ts` format.
-- `mod.ts` exposes checks; `src/` owns matching, role operations, declaration
-  discovery, commands, and screens. `types/` owns shared semantic fields.
+- `mod.ts` exposes enforcement, verification, array filtering and SQL
+  predicates; `src/` owns shared parsing/evaluation, role operations,
+  declaration discovery, commands, and screens. `types/` owns shared semantic
+  fields.
 - `tables/` owns roles, nested role links, user assignments, and denied checks.
 - `programs/` and `cbus/commands/` expose ordinary management entrypoints.
 - `events/` subscribes to user deletion; auth owns cleanup of its role data.
@@ -133,7 +135,30 @@ No child DOX documents.
 - `check(action, value)` returns a boolean; `requirePermission(action, value)`
   throws `AuthorizationError` with code `forbidden`. Inputs are strings; no API
   parameter can replace the trusted checking user. Anonymous services use their
-  configured principal, including the explicit system bypass.
+  configured principal, including the explicit system bypass; trusted principals
+  need not have users-package account rows.
+- `verify(username, action, value)`, `filter(username, rows, mapping)` and
+  `sqlPredicate(username, action, field)` are unaudited permission queries with
+  explicit usernames, not `user:<name>` IDs or authentication. Unknown accounts
+  deny even if orphan roles exist; `system` bypasses permission lookup. Callers
+  own identity selection from trusted context. Keep enforcement callers on
+  `check`/`requirePermission`.
+- Array mapping keys are own properties and values are scalar action names; all
+  mapped checks must pass. Require a nonempty mapping, preserve object identity
+  and order in a new array, and deny missing/non-string/overlong values. Grants
+  are independent across scalar checks; no correlated multi-field model exists.
+- SQL returns a bound Kysely boolean expression for one scalar action and a text
+  reference/expression. Empty grants return false. PostgreSQL and SQLite share
+  exact decimal, case-sensitive pattern and UTF-16 lexical semantics. Restrict
+  SQL to well-formed Unicode text without NUL: invalid permission text throws,
+  SQLite NUL/non-text rows deny, and null/overlong text rows deny on both
+  engines. Do not coerce numeric columns. Compose multiple scalar predicates
+  with AND; never flatten correlated policies if such a model is added later.
+- `src/evaluation.ts` owns bounded role aggregation and evaluation for every
+  helper. Load once per invocation/batch, parse each entry once, preserve local
+  exclusions and propagate operational errors. SQL captures grants at creation;
+  reconstruct for each operation. No persistent cache, schema migration, UDF, or
+  new dependency. Query engine limits propagate and never remove restrictions.
 - `events/user-deleted.toml` subscribes to `users.deleted` with the ordinary
   `the8020/auth/user-deleted` program. It validates the event payload and calls
   auth-owned cleanup in an auth transaction, removing that user's assignments,
@@ -149,10 +174,29 @@ No child DOX documents.
   `!8000-8200` excludes the complete range. Negative-only expressions grant
   nothing. Escape comma, hyphen, star, question mark, exclamation, and backslash
   when needed for literals. Empty checked values match `*`.
+- Stored permission strings retain the original grammar, including literal
+  `<`/`>` prefixes, `!>10` exclusions and lexical ranges such as `>-~`. The
+  explicit per-entry object `{ comparisons: string }` enables comparisons in the
+  existing JSON column; never infer a mode from string contents or silently
+  convert existing entries. `PermissionValues` is exported from `mod.ts`.
+  `setPermission` and role creation/save accept both forms. The grant command
+  opts in with `--comparisons` after its three positional arguments; without it,
+  strings retain legacy semantics. The editor's Comparisons checkbox and list
+  column preserve and display each entry's mode. Description edits and unrelated
+  grants must not convert entries. No data/schema migration is needed.
+- In comparison mode, `>`, `>=`, `<`, `<=` compare one literal endpoint. `!>`,
+  `!>=`, `!<`, `!<=` normalize to positive `<=`, `<`, `>=`, `>` grants in the
+  shared parser; they are not exclusions. Numeric endpoints accept only exact
+  signed decimal strings, never null, exponent notation or coercion. Other
+  endpoints use case-sensitive UTF-16 order. Escape leading comparison
+  punctuation for a literal. Existing inclusive ranges and `!value`/`!range`
+  exclusions remain. Permission entry/display uses `types/auth.ts` and the
+  shared parser.
 - Maximums: names 200 characters, actions 512, checked values 2048, expressions
   8192, and 256 permission entries per role. Walk at most 10,000 reachable roles
-  in batches of 100; exceeding the limit denies and records `role_limit`.
-  Denials retain at most 100 diagnostic entries. No successful-check history or
+  in batches of 100; a complete traversal must fit the limit even if an early
+  entry grants. Exceeding it denies; enforcement records `role_limit`. Denials
+  retain at most 100 diagnostic entries. No successful-check history or
   cross-check permission cache exists.
 - `auth.roles.*` commands manage roles/entries/inclusions; `auth.users.*` manage
   assignments/personal roles; `auth.failures.list` reads the latest 100 denials.
@@ -178,8 +222,9 @@ No child DOX documents.
   Value expressions contain comma-separated exact values, patterns, inclusive
   numeric or lexical ranges, and `!` exclusions. At least one positive match is
   required. Escape a literal hyphen when it could denote a range.
-- Failed checks persist username, action, value, UTC time, reason, and bounded
-  evaluation details. Operational failures propagate and never grant access.
+- Failed enforcement checks persist username, action, value, UTC time, reason,
+  and bounded evaluation details. Operational failures propagate and never grant
+  access.
 - Create username roles lazily on personal-permission edits. Role management
   requires authorization and all mutations share `src/admin.ts`.
 - `declarations/auth.toml` maps quoted action IDs to descriptions. It is
@@ -190,6 +235,9 @@ No child DOX documents.
   user/role navigation. No browser components or authorization runtime exist.
 
 # Work Guidance
+
+- Package versions use annotated numeric Git tags; `package.toml` has no version
+  field. Record release notes and compatibility limits in the tag annotation.
 
 - Build only what the request and established contracts require. Before adding a
   mechanism, identify that need and why existing owners or standard tools cannot
@@ -225,4 +273,15 @@ No child DOX documents.
   test owns resumed administrator grants.
 
 - `deno task check` formats, lints, and checks source types.
-- `deno task test` checks matching and SQLite-backed role/check operations.
+- `deno task test` checks matching and SQLite-backed role/check operations,
+  helper parity, query counts, non-mutation, audit counts, limits and injection
+  boundaries, plus raw legacy grants and explicit comparison-mode edits.
+- `deno task test:postgres` uses `psql` with standard `PG*` environment settings
+  against an isolated test database. It executes production-generated predicates
+  with bound parameters and shared verify/filter cases in temporary tables, then
+  rolls back. Permission aggregation uses the SQLite bridge in this check. The
+  fixtures include raw legacy strings without conversion. The ordinary test task
+  skips the opt-in PostgreSQL test.
+- `README.md` owns concise API examples, scalar mapping semantics, comparison
+  boundaries and SQL text/type constraints. No parent DOX structure changes are
+  needed when adding ordinary source/test files here.

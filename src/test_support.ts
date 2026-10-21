@@ -9,6 +9,7 @@ import { installContextProvider } from "../../kernel/defaults/config/runtime/den
 export async function authDatabase() {
   const globals = globalThis as unknown as Record<symbol, unknown>;
   const previous = globals[kernelInvokeSymbol];
+  const previousBackend = globals[kernelDatabaseBackendSymbol];
   globals[kernelDatabaseBackendSymbol] = "sqlite";
   const { descriptorOf } = await import("/p/the8020/db/mod.ts");
   const database = new DatabaseSync(":memory:");
@@ -43,6 +44,7 @@ export async function authDatabase() {
       `CREATE TABLE "${descriptor.table_id}" (${columns.join(",")})`,
     );
   }
+  const queries: string[] = [];
   const calls: { operation: string; input: Record<string, unknown> }[] = [];
   globals[kernelInvokeSymbol] = (
     operation: string,
@@ -66,6 +68,7 @@ export async function authDatabase() {
     if (operation !== "database.execute") {
       throw new Error(`Unexpected operation ${operation}`);
     }
+    queries.push(String(input.statement));
     const parameters = (input.parameters as unknown[]).map((value) => {
       if (value !== null && typeof value === "object") {
         const tagged = value as { type: string; value: string | boolean };
@@ -108,12 +111,14 @@ export async function authDatabase() {
   return {
     database,
     calls,
+    queries,
     asUser(name: string) {
       username = name;
     },
     close() {
       restore();
       globals[kernelInvokeSymbol] = previous;
+      globals[kernelDatabaseBackendSymbol] = previousBackend;
       database.close();
     },
   };

@@ -15,6 +15,7 @@ import Roles from "../tables/roles.ts";
 import UserRoles from "../tables/user_roles.ts";
 import RoleIncludes from "../tables/role_includes.ts";
 import Failures from "../tables/failures.ts";
+import type { PermissionValues } from "./matching.ts";
 
 function missing(kind: string, name: string): never {
   throw new AdminCommandError({
@@ -88,7 +89,7 @@ export async function saveRole(input: z.infer<typeof role>) {
 export async function setPermission(
   name: string,
   action: string,
-  values?: string,
+  values?: PermissionValues,
 ) {
   roleName.parse(name);
   if (values !== undefined) permissions.parse({ [action]: values });

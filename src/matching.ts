@@ -43,7 +43,20 @@ export function pattern(source: string): (value: string) => boolean {
   };
 }
 
-const numeric = /^-?\d+(?:\.\d+)?$/;
+export const numeric = /^-?\d+(?:\.\d+)?$/;
+export type PermissionValues = string | { comparisons: string };
+export type Comparison = ">" | ">=" | "<" | "<=";
+export type ValueTerm =
+  | { kind: "pattern"; source: string }
+  | {
+    kind: "ordered";
+    numbers: boolean;
+    bounds: { operator: Comparison; value: string }[];
+  };
+export interface PermissionTerm {
+  excluded: boolean;
+  term: ValueTerm;
+}
 
 function compare(a: string, b: string, numbers: boolean): number {
   if (!numbers) return a < b ? -1 : a > b ? 1 : 0;
@@ -59,51 +72,109 @@ function compare(a: string, b: string, numbers: boolean): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
-function term(source: string): (value: string) => boolean {
-  if (numeric.test(source)) return pattern(source);
+function endpoint(source: string): string {
+  if (
+    !source ||
+    source.match(/\\[\s\S]|[\s\S]/gu)!.some((token) =>
+      token === "*" || token === "?" || token === "\\"
+    )
+  ) throw new TypeError("An ordered endpoint must be a literal value");
+  return source.replace(/\\([\s\S])/gu, "$1");
+}
+
+function term(source: string, comparisons: boolean): ValueTerm {
+  const comparison = comparisons && source.match(/^(!?)(>=|<=|>|<)(.*)$/s);
+  if (comparison) {
+    let operator = comparison[2] as Comparison;
+    if (comparison[1]) {
+      operator =
+        ({ ">": "<=", ">=": "<", "<": ">=", "<=": ">" } as const)[operator];
+    }
+    const value = endpoint(comparison[3]!);
+    return {
+      kind: "ordered",
+      numbers: numeric.test(value),
+      bounds: [{ operator, value }],
+    };
+  }
+  if (numeric.test(source)) return { kind: "pattern", source };
   const numberRange = source.match(/^(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)$/);
   const parts = numberRange ? numberRange.slice(1) : split(source, "-");
-  if (parts.length === 1) return pattern(source);
-  if (
-    parts.length !== 2 ||
-    parts.some((part) =>
-      !part ||
-      part.match(/\\[\s\S]|[\s\S]/gu)!.some((token) =>
-        token === "*" || token === "?"
-      )
-    )
-  ) {
+  if (parts.length === 1) {
+    pattern(source);
+    return { kind: "pattern", source };
+  }
+  if (parts.length !== 2) {
     throw new TypeError(
       "Use two range endpoints; escape literal hyphens with \\-",
     );
   }
-  const [start, end] = parts.map((part) =>
-    part.replace(/\\([\s\S])/gu, "$1")
-  ) as [string, string];
+  const [start, end] = parts.map(endpoint) as [string, string];
   const numbers = numeric.test(start) && numeric.test(end);
   if (compare(start, end, numbers) > 0) {
     throw new TypeError("Range start exceeds its end");
   }
-  return (value) =>
-    (!numbers || numeric.test(value)) && compare(start, value, numbers) <= 0 &&
-    compare(value, end, numbers) <= 0;
+  return {
+    kind: "ordered",
+    numbers,
+    bounds: [
+      { operator: ">=", value: start },
+      { operator: "<=", value: end },
+    ],
+  };
 }
 
-export function expression(
-  source: string,
-): (value: string) => "allowed" | "excluded" | "no_value_match" {
-  const terms = split(source, ",").map((part) => {
+/** Parse once; evaluators and SQL consume the same normalized terms. */
+export function parseExpression(input: PermissionValues): PermissionTerm[] {
+  const comparisons = typeof input !== "string";
+  if (
+    comparisons &&
+    (!input || typeof input !== "object" || Array.isArray(input) ||
+      Object.keys(input).length !== 1 || !Object.hasOwn(input, "comparisons") ||
+      typeof input.comparisons !== "string")
+  ) throw new TypeError("Expected a string or { comparisons: string }");
+  const source = comparisons ? input.comparisons : input;
+  return split(source, ",").map((part) => {
     part = part.trim();
-    const excluded = part.startsWith("!");
-    return { excluded, matches: term(excluded ? part.slice(1) : part) };
+    // Stored strings retain their original literal, exclusion and range semantics.
+    const excluded = part.startsWith("!") &&
+      !(comparisons && /^![<>]/.test(part));
+    return {
+      excluded,
+      term: term(excluded ? part.slice(1) : part, comparisons),
+    };
   });
-  return (value) => {
+}
+
+export function compileExpression(terms: PermissionTerm[]) {
+  const compiled = terms.map(({ excluded, term }) => ({
+    excluded,
+    matches: term.kind === "pattern"
+      ? pattern(term.source)
+      : (value: string) =>
+        (!term.numbers || numeric.test(value)) &&
+        term.bounds.every(({ operator, value: bound }) => {
+          const order = compare(value, bound, term.numbers);
+          return operator === ">"
+            ? order > 0
+            : operator === ">="
+            ? order >= 0
+            : operator === "<"
+            ? order < 0
+            : order <= 0;
+        }),
+  }));
+  return (value: string): "allowed" | "excluded" | "no_value_match" => {
     let allowed = false;
-    for (const term of terms) {
+    for (const term of compiled) {
       if (!term.matches(value)) continue;
       if (term.excluded) return "excluded";
       allowed = true;
     }
     return allowed ? "allowed" : "no_value_match";
   };
+}
+
+export function expression(source: PermissionValues) {
+  return compileExpression(parseExpression(source));
 }
