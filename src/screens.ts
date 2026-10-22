@@ -2,6 +2,7 @@ import {
   BACK_EVENT,
   callScreen,
   confirmAction,
+  describeError,
   field,
   Model,
   presentModal,
@@ -49,7 +50,7 @@ const attributeRow = z.object({
 });
 const userRow = z.object({ username, automatic, explicit: z.boolean() });
 function error(value: unknown) {
-  sendMessage(value instanceof Error ? value.message : String(value), "error");
+  sendMessage(describeError(value), "error");
 }
 
 async function pick(
@@ -186,7 +187,7 @@ async function editRole(
       });
       return saved.name;
     } catch (e) {
-      error(e);
+      sendMessage(describeError(e, schema), "error");
     }
   }
 }
