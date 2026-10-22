@@ -67,6 +67,8 @@ export const value = field(z.string().max(2048), {
 const valueExpression = field(
   z.string().min(1).max(8192),
   {
+    // Several values; escaping keeps a chosen literal out of the grammar.
+    multiple: { separator: ",", escape: "-*?!<>" },
     label: "Allowed values",
     description:
       "Comma-separated values, inclusive ranges, `*`/`?` patterns and `!` exclusions. Enable Comparisons to use `>`, `>=`, `<`, `<=`; `!>`, `!>=`, `!<`, `!<=` then mean `<=`, `<`, `>=`, `>` and grant on their own. Numeric endpoints compare exact decimals; other endpoints compare case-sensitive text. Example with Comparisons enabled: `>=7000,!8000-8200`. Escape leading comparison punctuation for literals in that mode. With Comparisons off, `<` and `>` keep their literal meaning.",

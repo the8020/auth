@@ -6,11 +6,12 @@ export async function declarations(
   root = new URL("file:///workspace/packages/"),
 ) {
   return (await read(root, "auth.toml", action, true)).map((
-    { name, description, audit },
+    { name, description, audit, value },
   ) => ({
     action: name,
     description,
     ...(audit === undefined ? {} : { audit }),
+    ...(value === undefined ? {} : { value }),
   }));
 }
 
@@ -89,7 +90,12 @@ async function read(
       }
     }
   }
-  const rows: { name: string; description: string; audit?: boolean }[] = [];
+  const rows: {
+    name: string;
+    description: string;
+    audit?: boolean;
+    value?: boolean;
+  }[] = [];
   for (let offset = 0; offset < files.length; offset += 32) {
     const batch = await Promise.all(
       files.slice(offset, offset + 32).map(async (file) => {
@@ -121,7 +127,11 @@ async function read(
   );
 }
 
-/** A declaration is its description, or (for actions) `{ description, audit }`. */
+/**
+ * A declaration is its description, or (for actions) a table with
+ * `description`, optional `audit`, and optional `value = false` for actions
+ * checked without a value (role entries then grant them with `*`).
+ */
 function entry(value: unknown, tables: boolean) {
   if (!tables || typeof value === "string") {
     return { description: role.shape.description.parse(value) };
@@ -131,7 +141,7 @@ function entry(value: unknown, tables: boolean) {
   }
   const record = value as Record<string, unknown>;
   const unknown = Object.keys(record).find((name) =>
-    !["description", "audit"].includes(name)
+    !["description", "audit", "value"].includes(name)
   );
   if (unknown !== undefined) {
     throw new TypeError(`Unknown declaration key ${unknown}`);
@@ -139,8 +149,12 @@ function entry(value: unknown, tables: boolean) {
   if (record.audit !== undefined && typeof record.audit !== "boolean") {
     throw new TypeError("audit must be true or false");
   }
+  if (record.value !== undefined && record.value !== false) {
+    throw new TypeError("value may only be false");
+  }
   return {
     description: role.shape.description.parse(record.description),
     ...(record.audit === undefined ? {} : { audit: record.audit }),
+    ...(record.value === undefined ? {} : { value: false as const }),
   };
 }

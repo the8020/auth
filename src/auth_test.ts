@@ -2,6 +2,10 @@ import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
 import { expression, pattern } from "./matching.ts";
 import { authDatabase } from "./test_support.ts";
 
+/** `users.add` publishes users.created; these checks count other calls. */
+const created = (call: { operation: string; input: Record<string, unknown> }) =>
+  call.operation === "event.emit" && call.input.name === "users.created";
+
 Deno.test("patterns and inclusive ranges keep exclusions local and values exact", () => {
   const match = expression("7000-9000,25*,4444,3333,!8000-8200,!2577");
   for (
@@ -101,7 +105,7 @@ Deno.test("real role operations, trusted checks, denials and mutation boundaries
       () => services.restart("acme/example/api"),
       AuthorizationError,
     );
-    assertEquals(fixture.calls, []);
+    assertEquals(fixture.calls.filter((call) => !created(call)), []);
     fixture.asUser("system");
     await command("create", [
       "sales",
@@ -141,10 +145,15 @@ Deno.test("real role operations, trusted checks, denials and mutation boundaries
     assert(await check("sales.customer.edit", "8100"));
     await services.restart("acme/example/api");
     await packages.delete("acme/example", true);
-    assertEquals(fixture.calls.map((call) => call.operation), [
-      "service.restart",
-      "package.delete",
-    ]);
+    assertEquals(
+      fixture.calls.filter((call) => !created(call)).map((call) =>
+        call.operation
+      ),
+      [
+        "service.restart",
+        "package.delete",
+      ],
+    );
     fixture.asUser("system");
     await admin.setPermission("alice", "sales.customer.edit");
     fixture.asUser("alice");
@@ -168,14 +177,16 @@ Deno.test("real role operations, trusted checks, denials and mutation boundaries
     assertEquals((await admin.getRole("alice")).name, "alice");
     assertEquals((await admin.userRoles("bob"))[0]?.role, "alice");
     const deleted = fixture.calls.find((call) =>
-      call.operation === "event.emit"
+      call.operation === "event.emit" && !created(call)
     )!
       .input;
     assertEquals(deleted, {
       name: "users.deleted",
       data: { username: "alice" },
     });
-    await assertRejects(() => userDeleted({ name: "users.deleted", data: {} }));
+    await assertRejects(() =>
+      userDeleted({ name: "users.deleted", data: {} })
+    );
     await userDeleted(deleted);
     await userDeleted(deleted);
     assertEquals((await admin.roleUsers("team")).length, 0);
@@ -191,7 +202,9 @@ Deno.test("real role operations, trusted checks, denials and mutation boundaries
     fixture.asUser("system");
     await users.remove("bob");
     assertEquals(
-      fixture.calls.filter((call) => call.operation === "event.emit").map((
+      fixture.calls.filter((call) =>
+        call.operation === "event.emit" && !created(call)
+      ).map((
         call,
       ) => call.input),
       [
@@ -207,7 +220,9 @@ Deno.test("real role operations, trusted checks, denials and mutation boundaries
     await assertRejects(() => users.remove("nobody"));
     assertEquals((await admin.getRole("nobody")).name, "nobody");
     assertEquals(
-      fixture.calls.filter((call) => call.operation === "event.emit").length,
+      fixture.calls.filter((call) =>
+        call.operation === "event.emit" && !created(call)
+      ).length,
       2,
     );
     await admin.deleteRole("sales");

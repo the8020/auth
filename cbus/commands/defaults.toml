@@ -1,0 +1,8 @@
+version = 1
+command = "auth.roles.defaults"
+program = "the8020/auth/command-defaults"
+summary = "Show or replace the default roles of new users"
+description = "Show the roles every new user receives; with role names, replace them; with --none, assign none."
+usage = "[role...] [--none]"
+mutates_state = true
+restart_behavior = "none"

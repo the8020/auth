@@ -1,0 +1,3 @@
+event = "users.created"
+description = "Assign the default roles to a newly created user"
+program = "the8020/auth/user-created"

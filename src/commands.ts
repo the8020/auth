@@ -5,6 +5,7 @@ import {
 } from "/p/the8020/packages/commands.ts";
 import * as admin from "./admin.ts";
 import * as audit from "./audit.ts";
+import * as defaults from "./defaults.ts";
 
 export async function command(operation: string, args: string[]) {
   const arg = (index: number, name: string) =>
@@ -119,6 +120,21 @@ export async function command(operation: string, args: string[]) {
       return { role: await admin.personalRole(arg(0, "username")) };
     case "failures":
       return { failures: await admin.failedChecks(args[0]) };
+    case "defaults": {
+      const none = args.includes("--none");
+      const roles = args.filter((item) => item !== "--none");
+      if (none && roles.length) {
+        throw new AdminCommandError({
+          code: "invalid_arguments",
+          message: "usage: [role...] [--none]",
+        });
+      }
+      return {
+        roles: none || roles.length
+          ? await defaults.setDefaultRoles(roles)
+          : await defaults.defaultRoles(),
+      };
+    }
     case "audit":
       return { grants: await audit.grantedChecks(args[0]) };
     case "retention": {

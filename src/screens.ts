@@ -1,6 +1,7 @@
 import {
   BACK_EVENT,
   callScreen,
+  confirmAction,
   field,
   Model,
   presentModal,
@@ -21,6 +22,7 @@ import {
 import { isAttributeReference, type PermissionValues } from "./matching.ts";
 import * as admin from "./admin.ts";
 import * as audit from "./audit.ts";
+import * as defaults from "./defaults.ts";
 
 const automatic = field(z.boolean(), {
   label: "Automatic",
@@ -37,6 +39,9 @@ const permissionEntry = permission.extend({
       "Take the allowed values from this attribute of each assignment instead of Allowed values.",
   }),
 });
+/** Short syntax help under Allowed values; the field keeps its full grammar. */
+const VALUES_HELP =
+  "Comma-separated values, inclusive ranges, `*`/`?` patterns and `!` exclusions; `*` allows every value. Enable Comparisons for `<`, `>`, `<=`, `>=`.";
 const attributeRow = z.object({
   attribute: attributeName,
   values: permission.shape.values.optional(),
@@ -66,16 +71,20 @@ async function pick(
   }
 }
 
-async function confirm(title: string): Promise<boolean> {
-  return await presentModal(async () =>
-    (await callScreen({
-      id: "auth-confirm",
-      title,
-      schema: z.object({}),
-      model: new Model({}),
-      header: { actions: [{ id: "delete", label: "Delete", kind: "danger" }] },
-    })).action === "delete"
-  );
+/** Shared UUI confirmation: short title, consequence as body text. */
+function confirm(
+  title: string,
+  message: string,
+  label = "Delete",
+  kind: "danger" | "primary" = "danger",
+): Promise<boolean> {
+  return confirmAction({
+    id: "auth-confirm",
+    title,
+    message,
+    confirm: label,
+    kind,
+  });
 }
 
 export async function roles(selected?: string): Promise<void> {
@@ -114,7 +123,10 @@ export async function roles(selected?: string): Promise<void> {
         },
       },
       header: {
-        actions: [{ id: "audit", label: "Audit" }, {
+        actions: [{ id: "defaults", label: "Default roles" }, {
+          id: "audit",
+          label: "Audit",
+        }, {
           id: "failures",
           label: "Failed checks",
         }],
@@ -131,6 +143,9 @@ export async function roles(selected?: string): Promise<void> {
       }
       if (event.action === "failures") await presentPage(() => failures());
       if (event.action === "audit") await presentPage(() => auditLog());
+      if (event.action === "defaults") {
+        await presentPage(() => defaultRolesScreen());
+      }
     } catch (e) {
       error(e);
     }
@@ -358,7 +373,12 @@ async function roleDetail(name: string): Promise<void> {
       }
       if (
         event.action === "adopt" &&
-        await confirm(`Replace ${name}'s permissions with its template's?`)
+        await confirm(
+          "Adopt template changes",
+          `The permissions and included roles of ${name} will be replaced with its template's.`,
+          "Adopt changes",
+          "primary",
+        )
       ) await admin.adoptTemplate(name);
       if (event.action === "included") {
         await presentPage(() => includedRoles(name));
@@ -366,7 +386,11 @@ async function roleDetail(name: string): Promise<void> {
       if (event.action === "users") await presentPage(() => roleUsers(name));
       if (
         event.action === "delete" &&
-        await confirm(`Delete role ${name} and all its assignments?`)
+        await confirm(
+          "Delete role",
+          `Role ${name} and all its assignments will be deleted.`,
+          "Delete role",
+        )
       ) {
         await admin.deleteRole(name);
         return;
@@ -385,11 +409,42 @@ async function editPermission(
   const model = new Model<Partial<z.infer<typeof permissionEntry>>>(
     existing ? { ...existing } : { comparisons: false },
   );
+  // Declarations explain each action's value; a missing one keeps defaults.
+  const declared = new Map(
+    (await import("./declarations.ts").then((module) => module.declarations())
+      .catch(() => [])).map((item) => [item.action, item]),
+  );
   while (true) {
+    const declaration = model.data.action === undefined
+      ? undefined
+      : declared.get(model.data.action);
+    const valueless = declaration?.value === false;
+    const schema = permissionEntry.partial().extend({
+      action: field(permissionEntry.shape.action.optional(), {
+        reactive: true,
+        ...(declaration === undefined ? {} : {
+          description: `${declaration.description}${
+            valueless ? " Granted as a whole; it has no value to restrict." : ""
+          }`,
+        }),
+      }),
+      values: field(permissionEntry.shape.values, {
+        hidden: valueless,
+        description: `${
+          declaration === undefined
+            ? ""
+            : `For this action: ${declaration.description} `
+        }${VALUES_HELP}`,
+      }),
+      comparisons: field(permissionEntry.shape.comparisons.optional(), {
+        hidden: valueless,
+      }),
+      attribute: field(permissionEntry.shape.attribute, { hidden: valueless }),
+    });
     const event = await callScreen({
       id: "auth-permission",
       title: `Permission · ${name}`,
-      schema: permissionEntry.partial(),
+      schema,
       model,
       controls: [
         { bind: "action", readOnly: !!existing, length: "long" },
@@ -414,8 +469,15 @@ async function editPermission(
     try {
       if (event.action === "save") {
         const data = permissionEntry.parse(model.data);
+        if (valueless) {
+          // Checked with an empty value, which `*` matches.
+          await admin.setPermission(name, data.action, "*");
+          return;
+        }
         if (!data.attribute && !data.values) {
-          throw new TypeError("Enter Allowed values or an Attribute");
+          throw new TypeError(
+            "Enter Allowed values (* allows every value) or choose an Attribute.",
+          );
         }
         await admin.setPermission(
           name,
@@ -430,7 +492,11 @@ async function editPermission(
       }
       if (
         existing && event.action === "delete" &&
-        await confirm(`Delete permission ${existing.action}?`)
+        await confirm(
+          "Delete permission",
+          `${existing.action} will be removed from role ${name}.`,
+          "Delete permission",
+        )
       ) {
         await admin.setPermission(name, existing.action);
         return;
@@ -994,5 +1060,44 @@ export async function ownRoles(): Promise<void> {
       },
     });
     if (event.action === BACK_EVENT) return;
+  }
+}
+
+/** The roles every new user receives, chosen together in one field. */
+export async function defaultRolesScreen(): Promise<void> {
+  const schema = z.object({
+    roles: field(z.array(roleName).max(32), {
+      label: "Default roles",
+      description:
+        "Every new user receives these roles. Existing users keep their roles.",
+      length: "long",
+    }),
+  });
+  const model = new Model<z.infer<typeof schema>>({ roles: [] });
+  try {
+    model.data.roles = await defaults.defaultRoles();
+  } catch (e) {
+    error(e);
+    return;
+  }
+  while (true) {
+    const event = await callScreen({
+      id: "auth-default-roles",
+      title: "Default roles of new users",
+      schema,
+      model,
+      header: {
+        actions: [{ id: "save", label: "Save", kind: "primary" }],
+      },
+    });
+    if (event.action === BACK_EVENT) return;
+    if (event.action !== "save") continue;
+    try {
+      model.data.roles = await defaults.setDefaultRoles(model.data.roles);
+      sendMessage("Default roles saved", "success");
+      return;
+    } catch (e) {
+      error(e);
+    }
   }
 }

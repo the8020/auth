@@ -127,7 +127,18 @@ No child DOX documents.
 - `src/audit.ts` owns the audit log, its retention and cleanup;
   `jobs/cleanup-audit.toml` runs `the8020/auth/audit-cleanup` daily at 03:00.
 - `programs/` and `cbus/commands/` expose ordinary management entrypoints.
-- `events/` subscribes to user deletion; auth owns cleanup of its role data.
+- `events/` subscribes to user deletion and creation; auth owns cleanup of its
+  role data and the default roles of new users.
+- `src/defaults.ts` owns the default roles: the `auth.default_roles` row in
+  `the8020/system` settings (a list of at most 32 existing role names; without a
+  row, `["the8020.users.user"]`; an empty list assigns none). Reading needs
+  `the8020.auth.roles.list`, replacing needs `the8020.auth.defaults.edit`.
+  `events/user-created.toml` runs `the8020/auth/user-created` on
+  `users.created`, which assigns the defaults without attributes to accounts
+  created within the last hour (a replayed event for an older account is inert),
+  skips missing roles with a warning and keeps existing assignments. Roles →
+  Default roles and `auth.roles.defaults [role...] [--none]` manage them.
+  Existing accounts are not changed.
 - `hooks/index-roles.toml` joins the `index-packages` chain;
   `src/role_declarations.ts` reads and synchronizes package-declared roles and
   the `audit` flags of each package's own actions (`auth.toml` table entries
@@ -172,6 +183,12 @@ No child DOX documents.
   declared flag always wins (`the8020.auth.roles.list` sets `audit = false`).
   Flags are read from the database (cached a minute per worker), never from
   package files at check time. `system` is never audited.
+- Action declarations may be text or `{ description, audit?, value = false }`;
+  `value = false` marks an action checked without a value. The permission
+  editor's Action field is reactive: a value-less action hides Allowed values,
+  Comparisons and Attribute and saves `*`; other declared actions show their
+  description under Allowed values. Saving without values or an attribute
+  explains that `*` allows every value. Unknown actions keep the full form.
 - Retention is the `auth.audit_retention_days` row in `the8020/system` settings
   (1–3650, default 30), shared by successes and denials. Reading the audit and
   the retention needs `the8020.auth.audit.view`; changing it and running cleanup

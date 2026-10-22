@@ -284,3 +284,105 @@ Deno.test("the users package's platform role declarations parse", async () => {
     fixture.close();
   }
 });
+
+Deno.test("new users receive the configured default roles once", async () => {
+  const fixture = await authDatabase();
+  const admin = await import("./admin.ts");
+  const users = await import("/p/the8020/users/src/admin.ts");
+  const defaults = await import("./defaults.ts");
+  const { command } = await import("./commands.ts");
+  const assigned = async (name: string) =>
+    (await admin.userRoles(name)).filter((row) => row.explicit).map((row) =>
+      row.role
+    );
+  try {
+    await admin.createRole({
+      name: "the8020.users.user",
+      description: "",
+      permissions: {},
+      collection: true,
+    });
+    await admin.createRole({ name: "staff", description: "", permissions: {} });
+    await users.add("novak");
+    // Creating an account publishes users.created for the listener.
+    assert(
+      fixture.calls.some((call) =>
+        call.operation === "event.emit" && call.input.name === "users.created"
+      ),
+    );
+    assertEquals(await command("defaults", []), {
+      roles: ["the8020.users.user"],
+    });
+    assertEquals(await defaults.assignDefaultRoles("novak"), [
+      "the8020.users.user",
+    ]);
+    assertEquals(await assigned("novak"), ["the8020.users.user"]);
+
+    assertEquals(await command("defaults", ["staff", "the8020.users.user"]), {
+      roles: ["staff", "the8020.users.user"],
+    });
+    await assertRejects(
+      () => command("defaults", ["missing"]),
+      Error,
+      "missing",
+    );
+    await users.add("svoboda");
+    await defaults.assignDefaultRoles("svoboda");
+    assertEquals(await assigned("svoboda"), ["staff", "the8020.users.user"]);
+
+    // A replayed event for an old account assigns nothing.
+    const later = new Date(Date.now() + 2 * 60 * 60_000);
+    await users.add("dvorak");
+    assertEquals(await defaults.assignDefaultRoles("dvorak", later), []);
+    assertEquals(await defaults.assignDefaultRoles("nobody"), []);
+
+    assertEquals(await command("defaults", ["--none"]), { roles: [] });
+    await users.add("cerny");
+    assertEquals(await defaults.assignDefaultRoles("cerny"), []);
+
+    fixture.asUser("novak");
+    await assertRejects(() => defaults.setDefaultRoles([]));
+  } finally {
+    fixture.close();
+  }
+});
+
+Deno.test("action declarations may mark actions checked without a value", async () => {
+  const { parseActionDeclarations } = await import("./declarations.ts");
+  assertEquals(
+    parseActionDeclarations(
+      `"a.b.sql.execute" = { description = "Run SQL; value is empty.", value = false }
+"a.b.table.view" = "View a table; value is the table ID."
+`,
+    ),
+    [
+      {
+        action: "a.b.sql.execute",
+        description: "Run SQL; value is empty.",
+        value: false,
+      },
+      {
+        action: "a.b.table.view",
+        description: "View a table; value is the table ID.",
+      },
+    ],
+  );
+  assertThrows(
+    () =>
+      parseActionDeclarations(`"a.b.c" = { description = "x", value = true }`),
+    TypeError,
+    "value may only be false",
+  );
+  // Every platform declaration still parses.
+  for await (const entry of Deno.readDir(new URL("../../", import.meta.url))) {
+    const file = new URL(
+      `../../${entry.name}/declarations/auth.toml`,
+      import.meta.url,
+    );
+    try {
+      parseActionDeclarations(await Deno.readTextFile(file));
+    } catch (error) {
+      if (!(error instanceof Deno.errors.NotFound)) throw error;
+    }
+  }
+});
