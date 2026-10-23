@@ -169,9 +169,12 @@ No child DOX documents.
   `check`/`requirePermission`. `permitsAny(username, action)` is the same kind
   of unaudited query for menus and tiles: true when any reachable entry has a
   positive term for the action (or for `system`); enforcement still checks the
-  actual value. `usersWithPermission(action, value)` returns the sorted enabled
-  accounts the action is granted to for the value (at most 10,000 evaluated,
-  otherwise `RangeError`); it is unaudited and does not check the caller.
+  actual value. `permittedActions(username, actions)` returns the Set of actions
+  meeting that same rule in one role traversal, without caching between calls;
+  an empty batch performs no database reads.
+  `usersWithPermission(action, value)` returns the sorted enabled accounts the
+  action is granted to for the value (at most 10,000 evaluated, otherwise
+  `RangeError`); it is unaudited and does not check the caller.
 - `admin.ownRoles()` returns the trusted signed-in user's own roles with
   descriptions and assignment attributes without a permission check;
   `programs/my-roles` shows them read-only for My account. `userRoles(name)`

@@ -375,6 +375,7 @@ Deno.test("action declarations may mark actions checked without a value", async 
   );
   // Every platform declaration still parses.
   for await (const entry of Deno.readDir(new URL("../../", import.meta.url))) {
+    if (!entry.isDirectory) continue;
     const file = new URL(
       `../../${entry.name}/declarations/auth.toml`,
       import.meta.url,

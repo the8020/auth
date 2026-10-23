@@ -53,7 +53,7 @@ export async function permissionsFor(
       entries: [],
     });
   }
-  if (username === "system") return policies;
+  if (username === "system" || policies.size === 0) return policies;
   const [
     { db },
     { default: Roles },

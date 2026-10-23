@@ -2,6 +2,7 @@ export { AuthorizationError, check, requirePermission } from "./src/check.ts";
 export {
   filter,
   permitsAny,
+  permittedActions,
   usersWithPermission,
   verify,
 } from "./src/verify.ts";

@@ -340,7 +340,10 @@ Deno.test("verify, filter and executed SQLite predicates agree without audits", 
 
 Deno.test("SQL text domain, length limits, identifiers, composition and role cap fail closed", async () => {
   const fixture = await authDatabase();
-  const { verify, filter, sqlPredicate, check } = await import("../mod.ts");
+  const { verify, filter, sqlPredicate, check, permittedActions } =
+    await import(
+      "../mod.ts"
+    );
   const { db, sql } = await import("/p/the8020/db/mod.ts");
   const admin = await import("./admin.ts");
   const users = await import("/p/the8020/users/src/admin.ts");
@@ -425,6 +428,7 @@ Deno.test("SQL text domain, length limits, identifiers, composition and role cap
       insert into the8020__auth__user_roles (username, role) select 'alice', 'limit-' || i from n`,
     );
     assertEquals(await verify("alice", "items.view", "yes"), false);
+    assertEquals(await permittedActions("alice", ["items.view"]), new Set());
     assertEquals(
       await filter("alice", [{ value: "yes" }], { value: "items.view" }),
       [],
@@ -442,6 +446,59 @@ Deno.test("SQL text domain, length limits, identifiers, composition and role cap
     const failures = await Failures.selectAll().execute();
     assertEquals(failures.length, 1);
     assertEquals(failures[0]!.reason, "role_limit");
+  } finally {
+    fixture.close();
+  }
+});
+
+Deno.test("menu permissions share one fresh role traversal for all actions", async () => {
+  const fixture = await authDatabase();
+  const { permittedActions, permitsAny } = await import("../mod.ts");
+  const admin = await import("./admin.ts");
+  const users = await import("/p/the8020/users/src/admin.ts");
+  try {
+    await users.add("alice");
+    await admin.createRole({
+      name: "alice",
+      description: "",
+      permissions: { "items.view": "CZ,!SK", "items.hidden": "!*" },
+    });
+    const actions = [
+      "items.view",
+      "items.hidden",
+      "items.missing",
+      "items.view",
+    ];
+    fixture.queries.length = 0;
+    const granted = await permittedActions("alice", actions);
+    assertEquals(granted, new Set(["items.view"]));
+    assertEquals(fixture.queries.length, 4, "one role traversal for the batch");
+    for (const action of actions) {
+      assertEquals(await permitsAny("alice", action), granted.has(action));
+    }
+    await admin.setPermission("alice", "items.view", "!*");
+    assertEquals(await permittedActions("alice", actions), new Set());
+    await admin.createRole({
+      name: "ghost",
+      description: "",
+      permissions: { "*": "*" },
+    });
+    assertEquals(await permittedActions("ghost", actions), new Set());
+
+    fixture.queries.length = 0;
+    assertEquals(await permittedActions("system", actions), new Set(actions));
+    assertEquals(await permittedActions("alice", []), new Set());
+    assertEquals(fixture.queries.length, 0);
+    await assertRejects(() => permittedActions("", []));
+    await assertRejects(() => permittedActions("system", [""]));
+    assertEquals(
+      fixture.database.prepare(
+        "select count(*) as n from the8020__auth__failures",
+      ).get(),
+      { n: 0 },
+    );
+    fixture.database.exec("drop table the8020__auth__roles");
+    await assertRejects(() => permittedActions("alice", actions));
   } finally {
     fixture.close();
   }

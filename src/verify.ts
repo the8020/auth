@@ -52,12 +52,24 @@ export async function permitsAny(
   username: string,
   action: string,
 ): Promise<boolean> {
-  const policy = (await permissionsFor(username, [action])).get(action)!;
-  if (policy.bypass) return true;
-  if (policy.reason === "role_limit") return false;
-  return policy.entries.some((entry) =>
-    entry.terms?.some((term) => !term.excluded) ?? false
-  );
+  return (await permittedActions(username, [action])).has(action);
+}
+
+/** The `permitsAny` result for a batch of actions, using one role traversal. */
+export async function permittedActions(
+  username: string,
+  actions: string[],
+): Promise<Set<string>> {
+  const permitted = new Set<string>();
+  for (const [action, policy] of await permissionsFor(username, actions)) {
+    if (
+      policy.bypass || policy.reason !== "role_limit" &&
+        policy.entries.some((entry) =>
+          entry.terms?.some((term) => !term.excluded) ?? false
+        )
+    ) permitted.add(action);
+  }
+  return permitted;
 }
 
 /** Upper bound on accounts one `usersWithPermission` call evaluates. */

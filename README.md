@@ -47,6 +47,12 @@ Existing trusted service principals can still use `check` without a
 users-package account. Password and account eligibility policy stays with
 authentication.
 
+For menus and tiles, `permittedActions(username, actions)` returns a `Set` of
+actions granted for some value, loading the roles once for the entire batch.
+`permitsAny(username, action)` checks a single action by the same rule. These
+helpers do not audit; the program still enforces permission for its actual
+value.
+
 `filter` returns a new array in input order and retains the original objects. It
 requires a nonempty property-to-action mapping and ANDs the checks. Missing,
 inherited, null, non-string, or overlong properties fail; values are not
