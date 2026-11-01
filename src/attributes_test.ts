@@ -79,14 +79,14 @@ Deno.test("assignment attributes bind role entries through nesting and keep corr
       ),
     );
 
-    // Comparison mode binds through attributes as well.
+    // Automatic comparisons bind through attributes as well.
     await admin.createRole({
       name: "limit",
       description: "",
       permissions: { "dlis.einvoice.amount.approve": { attribute: "limit" } },
     });
     await admin.assignRole("dvorak", "limit", true, {
-      limit: { comparisons: "<=10000" },
+      limit: "<=10000",
     });
     assertEquals(
       await verify("dvorak", "dlis.einvoice.amount.approve", "9999.50"),
@@ -164,16 +164,24 @@ Deno.test("commands set attribute references and assignment values", async () =>
       "viewer",
       "--attribute",
       `${CHANNEL}=SK,CZ`,
-      `--attribute-comparisons=limit=>=5`,
+      `--attribute=limit=>=5`,
     ]);
     assertEquals(
       (await admin.userRoles("novak")).find((row) => row.role === "viewer")
         ?.attributes,
-      { [CHANNEL]: "SK,CZ", limit: { comparisons: ">=5" } },
+      { [CHANNEL]: "SK,CZ", limit: ">=5" },
     );
     assertEquals(await verify("novak", VIEW, "CZ"), true);
     await assertRejects(() =>
       command("grant", ["viewer", VIEW, "x", "--attribute", "--comparisons"])
+    );
+    await assertRejects(() =>
+      command("assign", [
+        "novak",
+        "viewer",
+        "--attribute-comparisons",
+        "limit=>=5",
+      ])
     );
     await assertRejects(() =>
       command("assign", ["novak", "viewer", "--attribute", "missing-equals"])

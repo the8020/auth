@@ -106,33 +106,37 @@ decimals. At least one positive term must match; exceptions affect only their
 own permission entry. Another entry or role can grant access, including the
 personal `8100` grant above.
 
-Comparisons require an explicit per-entry opt-in. Existing stored strings keep
-their original meaning: `>10` is a literal, `!>10` is an exclusion that grants
-nothing alone, and `>-~` is an inclusive lexical range. No existing permission
-is reinterpreted or migrated. Enable **Comparisons** in the permission editor,
-or put `--comparisons` after the command's three positional arguments:
+Comparisons work automatically in the same expression:
 
-```sh
-auth.roles.grant sales 'sales.customer.view' '>=7000,!8000-8200' --comparisons
+```text
+root.values.*, !root.values.new
+1200-1400, >=1800, !1700, !1900-1910, "25-12-2026"
 ```
 
-The API and stored JSON use a distinct object for that entry:
+Double-quoted text is literal: `"25-12-2026"` is a date string, `">10"` is
+operator text, `"*"` is an actual asterisk, and `"a,b"` is one value. Use `\"`
+for a quote and `\\` for a backslash inside quotes. `""` matches the empty
+value. Unclosed or partially quoted literals are rejected. Backslash escaping
+remains supported outside quotes.
+
+```sh
+auth.roles.grant sales 'sales.customer.view' '>=7000,!8000-8200'
+```
 
 ```ts
 import { setPermission } from "/p/the8020/auth/src/admin.ts";
 
-await setPermission("sales", "sales.customer.view", {
-  comparisons: ">=7000,!8000-8200",
-});
-// Role permissions: { "sales.customer.view": { comparisons: ">=7000,!8000-8200" } }
+await setPermission("sales", "sales.customer.view", ">=7000,!8000-8200");
+// Role permissions: { "sales.customer.view": ">=7000,!8000-8200" }
 ```
 
-`PermissionValues`, exported from `mod.ts`, is
-`string | { comparisons: string }`. Both forms use the existing JSON column; no
-database schema change is needed. Plain strings passed to existing APIs or
-commands retain the original grammar. The editor displays and preserves each
-entry's mode, including when saving an existing entry without changing it.
-Changing that mode explicitly changes how the entry is interpreted.
+The permission and assignment editors use one **Allowed values** text field;
+there is no Comparisons checkbox or command flag. Existing
+`{ comparisons: string }` entries remain readable, and `PermissionValues`
+continues to accept that form for stored-data/API compatibility. Both forms use
+the same automatic grammar in the existing JSON column. Existing unquoted
+`<`/`>` prefixes now mean comparisons; quote or escape values intended as
+literal operator text before updating. No database schema migration is required.
 
 ## Attribute values on assignments
 
@@ -150,28 +154,27 @@ Reference the attribute in a role entry and give values when assigning:
 auth.roles.create dlis.einvoice.viewer
 auth.roles.grant dlis.einvoice.viewer dlis.einvoice.documents.view dlis.einvoice.channel --attribute
 auth.users.assign novak dlis.einvoice.viewer --attribute dlis.einvoice.channel=SK,CZ
-# Comparisons for one attribute: --attribute-comparisons dlis.einvoice.limit=<=10000
+# Comparisons for one attribute: --attribute 'dlis.einvoice.limit=<=10000'
 ```
 
 Stored entries are `{ attribute: "dlis.einvoice.channel" }`; assignment values
-use the ordinary value grammar or `{ comparisons }`. Roles included by the
-assigned role use the same values. Values stay with their assignment: a user who
-approves `SK` through one assignment and only views `CZ` through another cannot
-approve `CZ`. An attribute without a value on the assignment grants nothing.
-Repeating `auth.users.assign` with attributes replaces them; without attributes
-it keeps them. In **Roles for <user>**, open an assignment and choose
-**Attribute values**; assigning a role that refers to attributes opens that
-editor directly.
+use the same automatic value grammar. Roles included by the assigned role use
+the same values. Values stay with their assignment: a user who approves `SK`
+through one assignment and only views `CZ` through another cannot approve `CZ`.
+An attribute without a value on the assignment grants nothing. Repeating
+`auth.users.assign` with attributes replaces them; without attributes it keeps
+them. In **Roles for <user>**, open an assignment and choose **Attribute
+values**; assigning a role that refers to attributes opens that editor directly.
 
 For menus and tiles, `permitsAny(username, action)` answers whether the user can
 perform the action for at least one value, without writing an audit record.
 
-In comparison mode, use `>10`, `>=10`, `<10`, or `<=10`. The convenience forms
-`!>10`, `!>=10`, `!<10`, and `!<=10` normalize to `<=10`, `<10`, `>=10`, and
-`>10`. They are **positive grants**, even on their own; `*,!>10` therefore still
-grants all strings. Use `<=10` directly for that upper bound. To exclude an
-exact value or inclusive range, keep `!10` or `!10-20`. For example,
-`>=7000,!8000-8200` grants at least 7000 except the inclusive excluded interval.
+Use `>10`, `>=10`, `<10`, or `<=10`. The convenience forms `!>10`, `!>=10`,
+`!<10`, and `!<=10` normalize to `<=10`, `<10`, `>=10`, and `>10`. They are
+**positive grants**, even on their own; `*,!>10` therefore still grants all
+strings. Use `<=10` directly for that upper bound. To exclude an exact value or
+inclusive range, keep `!10` or `!10-20`. For example, `>=7000,!8000-8200` grants
+at least 7000 except the inclusive excluded interval.
 
 If the comparison endpoint is a signed decimal, only strings matching
 `-?digits[.digits]` are ordered, with exact precision (including leading zeros
@@ -181,10 +184,9 @@ the existing JavaScript UTF-16 lexical order, case-sensitively; empty strings
 are ordered lexically and match `*`. Bounded ranges still include both endpoints
 and are numeric only when both endpoints are numeric. Comparisons never coerce
 null or missing values into strings: `verify`/`check` reject invalid scalar
-arguments, while filtering and SQL deny invalid row values. In comparison mode,
-escape leading comparison punctuation for literals, for example `\>10` or
-`\!>10`. The permission editor uses this same parser and shows the grammar in
-field help.
+arguments, while filtering and SQL deny invalid row values. Quote or escape
+leading comparison punctuation for literals, for example `">10"` or `\>10`. The
+permission editor uses this same parser and shows the grammar in field help.
 
 The **Roles** and **Failed authorization checks** programs appear on Home. User
 details link to assigned roles; roles link to users and included roles. Personal

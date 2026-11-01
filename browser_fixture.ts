@@ -112,53 +112,52 @@ export default async function fixture() {
       await title(page, "Permission · alice");
       await input(page, "action", "sales.customer.edit");
       await input(page, "values", "!<7000,!8000-8200");
-      await wait(
-        page,
-        `(() => {
-        const item = document.querySelector('input[data-bind="comparisons"]');
-        if (!item || item.disabled) return false;
-        if (!item.checked) item.click();
-        return true;
-      })()`,
-        "enable comparisons",
+      assertEquals(
+        await page.evaluate(
+          "document.querySelector('[data-bind=comparisons]') === null",
+        ),
+        true,
       );
       await button(page, "Save permission");
       await title(page, "Role alice");
       assertEquals(
         (await admin.getRole("alice")).permissions["sales.customer.edit"],
-        { comparisons: "!<7000,!8000-8200" },
+        "!<7000,!8000-8200",
       );
       await row(page, "sales.customer.edit");
       await title(page, "Permission · alice");
       await wait(
         page,
-        `document.querySelector('input[data-bind="comparisons"]')?.checked === true`,
-        "comparison mode survives reload",
+        `document.querySelector('input[data-bind="values"]')?.value === '!<7000,!8000-8200'`,
+        "automatic comparisons survive reopening",
       );
       await button(page, "Save permission");
       await title(page, "Role alice");
       await button(page, "Add permission");
       await title(page, "Permission · alice");
-      await input(page, "action", "legacy.literal");
-      await input(page, "values", ">10");
+      await input(page, "action", "quoted.literal");
+      await input(page, "values", '">10", "25-12-2026", "a,b"');
       await button(page, "Save permission");
       await title(page, "Role alice");
-      await row(page, "legacy.literal");
+      await row(page, "quoted.literal");
       await title(page, "Permission · alice");
       await wait(
         page,
-        `document.querySelector('input[data-bind="comparisons"]')?.checked === false`,
-        "legacy mode survives reload",
+        `document.querySelector('input[data-bind="values"]')?.value === '\">10\", \"25-12-2026\", \"a,b\"'`,
+        "quoted literals survive reopening",
       );
       await button(page, "Save permission");
       await title(page, "Role alice");
       assertEquals(
-        (await admin.getRole("alice")).permissions["legacy.literal"],
-        ">10",
+        (await admin.getRole("alice")).permissions["quoted.literal"],
+        '">10", "25-12-2026", "a,b"',
       );
       const { verify } = await import("./mod.ts");
-      assertEquals(await verify("alice", "legacy.literal", ">10"), true);
-      assertEquals(await verify("alice", "legacy.literal", "11"), false);
+      assertEquals(await verify("alice", "quoted.literal", ">10"), true);
+      assertEquals(await verify("alice", "quoted.literal", "11"), false);
+      assertEquals(await verify("alice", "quoted.literal", "25-12-2026"), true);
+      assertEquals(await verify("alice", "quoted.literal", "a,b"), true);
+      assertEquals(await verify("alice", "quoted.literal", "a"), false);
       assertEquals(await verify("alice", "sales.customer.edit", "7000"), true);
       assertEquals(await verify("alice", "sales.customer.edit", "8100"), false);
       await button(page, "Included roles");
@@ -194,6 +193,39 @@ export default async function fixture() {
         "alice",
         "sales",
       ]);
+      await admin.createRole({
+        name: "scoped",
+        description: "",
+        permissions: {
+          "amount.approve": { attribute: "limit" },
+        },
+      });
+      await button(page, "Assign role");
+      await input(page, "value", "scoped");
+      await button(page, "Add");
+      await title(page, "alice · scoped · attribute values");
+      await row(page, "limit");
+      await title(page, "scoped · limit");
+      const mixed = '1200-1400, >=1800, !1700, !1900-1910, "25-12-2026"';
+      await input(page, "values", mixed);
+      assertEquals(
+        await page.evaluate(
+          "document.querySelector('[data-bind=comparisons]') === null",
+        ),
+        true,
+      );
+      await button(page, "Done");
+      await title(page, "alice · scoped · attribute values");
+      await button(page, "Save attribute values");
+      await title(page, "Roles for alice");
+      assertEquals(
+        (await admin.userRoles("alice")).find((row) => row.role === "scoped")
+          ?.attributes,
+        { limit: mixed },
+      );
+      assertEquals(await verify("alice", "amount.approve", "1800"), true);
+      assertEquals(await verify("alice", "amount.approve", "1905"), false);
+      assertEquals(await verify("alice", "amount.approve", "25-12-2026"), true);
       await button(page, "Failed checks");
       await title(page, "Failed checks · alice");
       await row(page, "sales.customer.edit");
@@ -237,7 +269,7 @@ export default async function fixture() {
         "Regional customer editors",
       );
       await button(page, "Delete role");
-      await button(page, "Delete");
+      await button(page, "Delete role");
       await title(page, "Roles");
     },
   };

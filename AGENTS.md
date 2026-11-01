@@ -188,10 +188,10 @@ No child DOX documents.
   package files at check time. `system` is never audited.
 - Action declarations may be text or `{ description, audit?, value = false }`;
   `value = false` marks an action checked without a value. The permission
-  editor's Action field is reactive: a value-less action hides Allowed values,
-  Comparisons and Attribute and saves `*`; other declared actions show their
-  description under Allowed values. Saving without values or an attribute
-  explains that `*` allows every value. Unknown actions keep the full form.
+  editor's Action field is reactive: a value-less action hides Allowed values
+  and Attribute and saves `*`; other declared actions show their description
+  under Allowed values. Saving without values or an attribute explains that `*`
+  allows every value. Unknown actions keep the full form.
 - Retention is the `auth.audit_retention_days` row in `the8020/system` settings
   (1–3650, default 30), shared by successes and denials. Reading the audit and
   the retention needs `the8020.auth.audit.view`; changing it and running cleanup
@@ -231,24 +231,25 @@ No child DOX documents.
   `!8000-8200` excludes the complete range. Negative-only expressions grant
   nothing. Escape comma, hyphen, star, question mark, exclamation, and backslash
   when needed for literals. Empty checked values match `*`.
-- Stored permission strings retain the original grammar, including literal
-  `<`/`>` prefixes, `!>10` exclusions and lexical ranges such as `>-~`. The
-  explicit per-entry object `{ comparisons: string }` enables comparisons in the
-  existing JSON column; never infer a mode from string contents or silently
-  convert existing entries. `PermissionValues` is exported from `mod.ts`.
-  `setPermission` and role creation/save accept both forms. The grant command
-  opts in with `--comparisons` after its three positional arguments; without it,
-  strings retain legacy semantics. The editor's Comparisons checkbox and list
-  column preserve and display each entry's mode. Description edits and unrelated
-  grants must not convert entries. No data/schema migration is needed.
-- In comparison mode, `>`, `>=`, `<`, `<=` compare one literal endpoint. `!>`,
-  `!>=`, `!<`, `!<=` normalize to positive `<=`, `<`, `>=`, `>` grants in the
-  shared parser; they are not exclusions. Numeric endpoints accept only exact
-  signed decimal strings, never null, exponent notation or coercion. Other
-  endpoints use case-sensitive UTF-16 order. Escape leading comparison
-  punctuation for a literal. Existing inclusive ranges and `!value`/`!range`
-  exclusions remain. Permission entry/display uses `types/auth.ts` and the
-  shared parser.
+- Permission and assignment value expressions infer their meaning from syntax:
+  plain values, `*`/`?` patterns, inclusive ranges, `!` exclusions and `>`,
+  `>=`, `<`, `<=` comparisons. Double-quoted text is literal, including
+  punctuation, commas and whitespace; `\"` and `\\` escape a quote and
+  backslash. Backslash escaping outside quotes remains supported. `""` matches
+  the empty value. Unclosed or partially quoted literals reject the entry.
+- Comparisons are automatic for existing and new strings. Literal operator text
+  must be quoted or escaped, e.g. `">10"`; no legacy string mode remains.
+  Existing `{ comparisons: string }` values remain readable through the same
+  parser. `PermissionValues` remains exported from `mod.ts`; APIs accept both
+  forms without a database schema migration. Editors and commands save strings
+  and have no Comparisons field or command flag. Allowed values is an ordinary
+  text field containing the complete expression, including quoted commas.
+- `!>`, `!>=`, `!<`, `!<=` retain their positive `<=`, `<`, `>=`, `>` aliases;
+  they are not exclusions. Numeric endpoints accept only exact signed decimal
+  strings, never null, exponent notation or coercion. Other endpoints use
+  case-sensitive UTF-16 order. Existing inclusive ranges and `!value`/`!range`
+  exclusions remain local to their entry. Permission entry/display uses
+  `types/auth.ts` and the shared parser; SQL consumes the same parsed terms.
 - Maximums: names 200 characters, actions 512, checked values 2048, expressions
   8192, and 256 permission entries per role. Walk at most 10,000 reachable roles
   in batches of 100; a complete traversal must fit the limit even if an early
@@ -274,16 +275,16 @@ No child DOX documents.
   binding) pair once, including cycles; the 10,000 cap counts these pairs.
 - A role entry may store `{ attribute: "<namespace>.<package>.<name>" }` instead
   of a value expression. An assignment row carries `attributes`, a JSON map of
-  attribute names to expressions (plain or `{ comparisons }`, at most 64).
-  Traversal carries the binding of the assignment that reached each role;
-  included roles inherit it and the personal role has none. A reference takes
-  its expression from that binding before compilation; an unbound attribute
-  grants nothing and reports `unbound_attribute`. Values therefore stay
-  correlated with their assignment: SK for one role and CZ for another never
-  merge. SQL predicates substitute the same way per entry.
+  attribute names to expressions (at most 64). Traversal carries the binding of
+  the assignment that reached each role; included roles inherit it and the
+  personal role has none. A reference takes its expression from that binding
+  before compilation; an unbound attribute grants nothing and reports
+  `unbound_attribute`. Values therefore stay correlated with their assignment:
+  SK for one role and CZ for another never merge. SQL predicates substitute the
+  same way per entry.
 - `assignRole(username, role, true, attributes)` replaces the assignment's
   values; omitting `attributes` keeps them. `auth.users.assign` takes repeated
-  `--attribute name=values` and `--attribute-comparisons name=values`;
+  `--attribute name=values` with the same automatic expression syntax;
   `auth.roles.grant … <attribute> --attribute` stores a reference.
   `roleAttributes(role)` lists references in a role and its includes. Both
   assignment screens (Roles for a user, and a role's Users) offer Attribute
@@ -361,8 +362,10 @@ No child DOX documents.
 
 - `deno task test:browser` uses the existing UUI Chromium harness with real
   screens and SQLite, covering user-role navigation, lazy personal roles,
-  permission edits, inclusions, assignments, failed-check evidence, and mobile
-  sizing. `browser_fixture.ts` and `src/test_support.ts` are test-only adapters.
+  automatic permission edits, quoted literal roundtrips, assignment expressions,
+  inclusions, failed-check evidence, and mobile sizing. `browser_fixture.ts` and
+  `src/test_support.ts` are test-only adapters; table creation reuses DB's
+  schema SQL so column defaults and constraints match installed tables.
 - Cross-package checks cover rejected service/package mutations before native
   calls, immediate grant/revoke behavior, event-owned user-deletion cleanup, and
   command parsing. Verify that user deletion leaves auth records for the
@@ -372,13 +375,14 @@ No child DOX documents.
 - `deno task check` formats, lints, and checks source types.
 - `deno task test` checks matching and SQLite-backed role/check operations,
   helper parity, query counts, non-mutation, audit counts, limits and injection
-  boundaries, plus raw legacy grants and explicit comparison-mode edits.
+  boundaries, quoted literals, automatic comparisons and existing object
+  entries.
 - `deno task test:postgres` uses `psql` with standard `PG*` environment settings
   against an isolated test database. It executes production-generated predicates
   with bound parameters and shared verify/filter cases in temporary tables, then
   rolls back. Permission aggregation uses the SQLite bridge in this check. The
-  fixtures include raw legacy strings without conversion. The ordinary test task
-  skips the opt-in PostgreSQL test.
+  fixtures include quoted text, empty literals and mixed expressions. The
+  ordinary test task skips the opt-in PostgreSQL test.
 - `README.md` owns concise API examples, scalar mapping semantics, comparison
   boundaries and SQL text/type constraints. No parent DOX structure changes are
   needed when adding ordinary source/test files here.

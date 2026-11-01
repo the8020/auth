@@ -1,14 +1,19 @@
-/** Split on unescaped separators, retaining escapes for pattern matching. */
+/** Split outside quoted literals, retaining quotes and escapes for parsing. */
 function split(source: string, separator: string): string[] {
   const parts = [""];
+  let quoted = false;
   for (let i = 0; i < source.length; i++) {
     const char = source[i]!;
     if (char === "\\") {
       if (++i === source.length) throw new TypeError("Incomplete escape");
       parts[parts.length - 1] += char + source[i];
-    } else if (char === separator) parts.push("");
-    else parts[parts.length - 1] += char;
+    } else if (char === separator && !quoted) parts.push("");
+    else {
+      if (char === '"') quoted = !quoted;
+      parts[parts.length - 1] += char;
+    }
   }
+  if (quoted) throw new TypeError("Unclosed quoted value");
   return parts;
 }
 
@@ -44,7 +49,7 @@ export function pattern(source: string): (value: string) => boolean {
 }
 
 export const numeric = /^-?\d+(?:\.\d+)?$/;
-/** A value expression in the existing grammar. */
+/** Automatic expressions; the object form remains readable for stored entries. */
 export type PermissionValues = string | { comparisons: string };
 /** A role entry whose values come from the assignment that reached the role. */
 export type AttributeReference = { attribute: string };
@@ -85,18 +90,32 @@ function compare(a: string, b: string, numbers: boolean): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
+function quotedValue(source: string): string {
+  if (!/^"(?:\\[\s\S]|[^"\\])*"$/u.test(source)) {
+    throw new TypeError("Quote the complete literal value");
+  }
+  return source.slice(1, -1).replace(/\\([\s\S])/gu, "$1");
+}
+
 function endpoint(source: string): string {
+  if (source.startsWith('"')) return quotedValue(source);
   if (
     !source ||
     source.match(/\\[\s\S]|[\s\S]/gu)!.some((token) =>
-      token === "*" || token === "?" || token === "\\"
+      token === "*" || token === "?" || token === "\\" || token === '"'
     )
   ) throw new TypeError("An ordered endpoint must be a literal value");
   return source.replace(/\\([\s\S])/gu, "$1");
 }
 
-function term(source: string, comparisons: boolean): ValueTerm {
-  const comparison = comparisons && source.match(/^(!?)(>=|<=|>|<)(.*)$/s);
+function term(source: string): ValueTerm {
+  if (source.startsWith('"')) {
+    return {
+      kind: "pattern",
+      source: quotedValue(source).replace(/[\\*?]/gu, "\\$&"),
+    };
+  }
+  const comparison = source.match(/^(!?)(>=|<=|>|<)(.*)$/s);
   if (comparison) {
     let operator = comparison[2] as Comparison;
     if (comparison[1]) {
@@ -114,12 +133,15 @@ function term(source: string, comparisons: boolean): ValueTerm {
   const numberRange = source.match(/^(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)$/);
   const parts = numberRange ? numberRange.slice(1) : split(source, "-");
   if (parts.length === 1) {
+    if (source.match(/\\[\s\S]|[\s\S]/gu)?.includes('"')) {
+      throw new TypeError("Quote the complete literal value");
+    }
     pattern(source);
     return { kind: "pattern", source };
   }
   if (parts.length !== 2) {
     throw new TypeError(
-      "Use two range endpoints; escape literal hyphens with \\-",
+      "Use two range endpoints; quote literal text containing hyphens",
     );
   }
   const [start, end] = parts.map(endpoint) as [string, string];
@@ -139,22 +161,21 @@ function term(source: string, comparisons: boolean): ValueTerm {
 
 /** Parse once; evaluators and SQL consume the same normalized terms. */
 export function parseExpression(input: PermissionValues): PermissionTerm[] {
-  const comparisons = typeof input !== "string";
+  const wrapped = typeof input !== "string";
   if (
-    comparisons &&
+    wrapped &&
     (!input || typeof input !== "object" || Array.isArray(input) ||
       Object.keys(input).length !== 1 || !Object.hasOwn(input, "comparisons") ||
       typeof input.comparisons !== "string")
   ) throw new TypeError("Expected a string or { comparisons: string }");
-  const source = comparisons ? input.comparisons : input;
+  const source = wrapped ? input.comparisons : input;
   return split(source, ",").map((part) => {
     part = part.trim();
-    // Stored strings retain their original literal, exclusion and range semantics.
     const excluded = part.startsWith("!") &&
-      !(comparisons && /^![<>]/.test(part));
+      !/^![<>]/.test(part);
     return {
       excluded,
-      term: term(excluded ? part.slice(1) : part, comparisons),
+      term: term(excluded ? part.slice(1) : part),
     };
   });
 }
@@ -163,7 +184,9 @@ export function compileExpression(terms: PermissionTerm[]) {
   const compiled = terms.map(({ excluded, term }) => ({
     excluded,
     matches: term.kind === "pattern"
-      ? pattern(term.source)
+      ? term.source === ""
+        ? (value: string) => value === ""
+        : pattern(term.source)
       : (value: string) =>
         (!term.numbers || numeric.test(value)) &&
         term.bounds.every(({ operator, value: bound }) => {

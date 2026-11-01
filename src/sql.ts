@@ -91,7 +91,7 @@ export async function sqlPredicate(
         "and",
       );
     }
-    const tokens = term.source.match(/\\[\s\S]|[\s\S]/gu)!;
+    const tokens = term.source.match(/\\[\s\S]|[\s\S]/gu) ?? [];
     if (!tokens.some((token) => token === "*" || token === "?")) {
       return sql`${collate(v)} = ${
         tokens.map((token) => token.startsWith("\\") ? token.slice(1) : token)

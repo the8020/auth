@@ -44,25 +44,13 @@ export async function command(operation: string, args: string[]) {
       };
     case "grant": {
       const parsed = parseCommandArguments(args.slice(3), {
-        booleans: ["comparisons", "attribute"],
+        booleans: ["attribute"],
       });
       const values = arg(2, "values");
-      if (
-        parsed.options.comparisons === true && parsed.options.attribute === true
-      ) {
-        throw new AdminCommandError({
-          code: "invalid_arguments",
-          message: "--comparisons and --attribute are mutually exclusive",
-        });
-      }
       await admin.setPermission(
         arg(0, "role"),
         arg(1, "action"),
-        parsed.options.attribute === true
-          ? { attribute: values }
-          : parsed.options.comparisons === true
-          ? { comparisons: values }
-          : values,
+        parsed.options.attribute === true ? { attribute: values } : values,
       );
       break;
     }
@@ -161,19 +149,20 @@ export async function command(operation: string, args: string[]) {
   return { success: true };
 }
 
-/**
- * `--attribute name=values` may repeat; `--attribute-comparisons name=values`
- * enables comparison operators for that attribute's values.
- */
+/** `--attribute name=values` may repeat; each value uses automatic syntax. */
 function assignmentArguments(args: readonly string[]) {
   const positionals: string[] = [];
-  let attributes: Record<string, string | { comparisons: string }> | undefined;
+  let attributes: Record<string, string> | undefined;
   for (let index = 0; index < args.length; index++) {
     const token = args[index]!;
-    const option = ["--attribute", "--attribute-comparisons"].find((name) =>
-      token === name || token.startsWith(`${name}=`)
-    );
-    if (option === undefined) {
+    const option = "--attribute";
+    if (token !== option && !token.startsWith(`${option}=`)) {
+      if (token.startsWith("--")) {
+        throw new AdminCommandError({
+          code: "invalid_arguments",
+          message: `Unknown option ${token}`,
+        });
+      }
       positionals.push(token);
       continue;
     }
@@ -196,9 +185,7 @@ function assignmentArguments(args: readonly string[]) {
         message: `repeated attribute ${name}`,
       });
     }
-    attributes[name] = option === "--attribute"
-      ? values
-      : { comparisons: values };
+    attributes[name] = values;
   }
   return { positionals, attributes };
 }

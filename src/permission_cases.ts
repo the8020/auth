@@ -1,22 +1,43 @@
 import type { PermissionValues } from "./matching.ts";
 
-/** Pre-comparison strings must keep these grants when read unchanged from storage. */
-export const legacyCases: [string, string[], string[]][] = [
-  [">10", [">10"], ["11", "10", "9"]],
-  [">=10", [">=10"], ["10", "11"]],
-  ["<10", ["<10"], ["9", "10"]],
-  ["<=10", ["<=10"], ["9", "10"]],
-  ["!>10", [], ["9", "10", "11", ">10"]],
-  ["!>=10", [], ["9", "10", ">=10"]],
-  ["!<10", [], ["10", "11", "<10"]],
-  ["!<=10", [], ["10", "11", "<=10"]],
-  ["*,!>10", ["9", "11", "anything"], [">10"]],
-  ["*,!>=10", ["9", "11"], [">=10"]],
-  ["*,!<10", ["9", "11"], ["<10"]],
-  ["*,!<=10", ["9", "11"], ["<=10"]],
-  [">-~", [">", "A", "~"], ["/", "9", "="]],
-  ["*,!>-~", ["/", "9", "="], [">", "A", "~"]],
-  [">*", [">", ">10", ">abc"], ["11", "abc"]],
+const literalCases: [string, string[], string[]][] = [
+  ['">10", ">=10", "<10", "<=10", "!>10", "a=b"', [
+    ">10",
+    ">=10",
+    "<10",
+    "<=10",
+    "!>10",
+    "a=b",
+  ], ["11", "10", "9"]],
+  ['"25-12-2026", "a,b", "*", "?", "!new"', [
+    "25-12-2026",
+    "a,b",
+    "*",
+    "?",
+    "!new",
+  ], ["25", "12", "2026", "a", "b", "anything"]],
+  ['"", "  spaces  "', ["", "  spaces  "], ["spaces", " "]],
+  ['"0010"', ["0010"], ["10", "0010.0"]],
+  [String.raw`"a\"b", "a\\b"`, ['a"b', "a\\b"], ["ab"]],
+  [
+    '*,!"root.values.new",!"25-12-2026",!"a,b"',
+    ["root.values.old", "25", "a"],
+    ["root.values.new", "25-12-2026", "a,b"],
+  ],
+  [
+    "root.values.*, !root.values.new",
+    ["root.values.old", "root.values.newer"],
+    ["root.values.new", "root.other"],
+  ],
+  ['1200-1400, >=1800, !1700, !1900-1910, "25-12-2026"', [
+    "1200",
+    "1300",
+    "1400",
+    "1800",
+    "1899",
+    "1911",
+    "25-12-2026",
+  ], ["1199", "1401", "1700", "1799", "1900", "1905", "1910", "anything"]],
   [String.raw`\>10`, [">10"], ["11"]],
 ];
 
@@ -90,7 +111,8 @@ const comparisonExpressions: [string, string[], string[]][] = [
 
 /** Shared executed-SQL fixtures; expected results are also checked through verify/filter. */
 export const comparisonCases: [PermissionValues, string[], string[]][] = [
-  ...legacyCases,
+  ...literalCases,
+  ...comparisonExpressions,
   ...comparisonExpressions.map(([source, allowed, denied]): [
     PermissionValues,
     string[],

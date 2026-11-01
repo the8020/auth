@@ -1,4 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
+import { createTableSQL } from "/p/the8020/db/internal/ddl.ts";
 import {
   kernelDatabaseBackendSymbol,
   kernelInvokeSymbol,
@@ -30,21 +31,7 @@ export async function authDatabase() {
     const descriptor = descriptorOf(
       (await import(`/p/the8020/${module}.ts`)).default,
     );
-    const columns = descriptor.columns.map((column) =>
-      `"${column.name}" ${
-        ["integer", "boolean"].includes(column.logical_type)
-          ? "INTEGER"
-          : "TEXT"
-      }`
-    );
-    columns.push(
-      `PRIMARY KEY (${
-        descriptor.primary_key.map((key) => `"${key}"`).join(",")
-      })`,
-    );
-    database.exec(
-      `CREATE TABLE "${descriptor.table_id}" (${columns.join(",")})`,
-    );
+    database.exec(createTableSQL("sqlite", descriptor));
   }
   const queries: string[] = [];
   const calls: { operation: string; input: Record<string, unknown> }[] = [];

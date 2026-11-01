@@ -1,9 +1,9 @@
 import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
 import { expression, type PermissionValues } from "./matching.ts";
-import { comparisonCases, legacyCases } from "./permission_cases.ts";
+import { comparisonCases } from "./permission_cases.ts";
 import { authDatabase } from "./test_support.ts";
 
-Deno.test("comparison grammar normalizes aliases, preserves ranges and rejects incomplete input", () => {
+Deno.test("automatic grammar supports quoted literals, comparisons, ranges and exclusions", () => {
   for (const [source, allowed, denied] of comparisonCases) {
     const match = expression(source);
     for (const value of allowed) {
@@ -13,12 +13,28 @@ Deno.test("comparison grammar normalizes aliases, preserves ranges and rejects i
       assert(match(value) !== "allowed", `${source}: ${value}`);
     }
   }
-  for (const source of [">", "!>=", "<=*", ">?", ">abc\\", "9-1"]) {
+  for (
+    const source of [
+      ">",
+      "!>=",
+      "<=*",
+      ">?",
+      ">abc\\",
+      "9-1",
+      '"unclosed',
+      '"a"tail',
+      'prefix"a"',
+      '"a""b"',
+      '"a",',
+      '!"unclosed',
+    ]
+  ) {
+    assertThrows(() => expression(source));
     assertThrows(() => expression({ comparisons: source }));
   }
 });
 
-Deno.test("permission edits preserve stored strings and explicitly opt into comparisons", async () => {
+Deno.test("permission edits use automatic syntax and read existing comparison objects", async () => {
   const fixture = await authDatabase();
   const admin = await import("./admin.ts");
   const users = await import("/p/the8020/users/src/admin.ts");
@@ -28,46 +44,52 @@ Deno.test("permission edits preserve stored strings and explicitly opt into comp
   try {
     await users.add("alice");
     await admin.createRole({ name: "alice", description: "", permissions: {} });
-    const legacy = Object.fromEntries(
-      legacyCases.map(([source], i) => [`old.${i}`, source]),
-    );
+    const stored = {
+      automatic: ">10",
+      literal: '">10"',
+      wrapped: { comparisons: ">10" },
+    };
     const seed = (entries: Record<string, unknown>) =>
       fixture.database.prepare(
         "update the8020__auth__roles set permissions = ? where name = ?",
       ).run(JSON.stringify(entries), "alice");
-    seed(legacy);
+    seed(stored);
     const loaded = await admin.getRole("alice");
-    assertEquals(loaded.permissions, legacy);
+    assertEquals(loaded.permissions, stored);
     await admin.saveRole({ ...loaded, description: "Edited description" });
-    await admin.setPermission("alice", "new", { comparisons: ">10" });
+    await admin.setPermission("alice", "new", ">=20");
     assertEquals((await admin.getRole("alice")).permissions, {
-      ...legacy,
-      new: { comparisons: ">10" },
+      ...stored,
+      new: ">=20",
     });
-    assertEquals(await verify("alice", "old.0", "11"), false);
-    assertEquals(await verify("alice", "new", "11"), true);
+    for (const action of ["automatic", "wrapped"]) {
+      assertEquals(await verify("alice", action, "11"), true);
+      assertEquals(await verify("alice", action, ">10"), false);
+    }
+    assertEquals(await verify("alice", "literal", ">10"), true);
+    assertEquals(await verify("alice", "literal", "11"), false);
     await command("grant", ["alice", "command", ">10"]);
-    assertEquals(await verify("alice", "command", "11"), false);
-    assertEquals(await verify("alice", "command", ">10"), true);
-    await command("grant", ["alice", "command", ">10", "--comparisons"]);
     assertEquals(await verify("alice", "command", "11"), true);
-    assertEquals((await admin.getRole("alice")).permissions.command, {
-      comparisons: ">10",
-    });
+    assertEquals((await admin.getRole("alice")).permissions.command, ">10");
+    await assertRejects(() =>
+      command("grant", ["alice", "command", ">10", "--comparisons"])
+    );
     await command("create", [
       "new-role",
       "--permissions",
       JSON.stringify({
-        new: { comparisons: "!>10" },
-        old: ">10",
+        comparison: "!>10",
+        literal: '">10"',
       }),
     ]);
     assertEquals((await admin.getRole("new-role")).permissions, {
-      new: { comparisons: "!>10" },
-      old: ">10",
+      comparison: "!>10",
+      literal: '">10"',
     });
     for (
-      const invalid of [null, [], 10, {}, { comparisons: 10 }, {
+      const invalid of ['"unclosed', '"a"tail', null, [], 10, {}, {
+        comparisons: 10,
+      }, {
         comparisons: "*",
         other: true,
       }]

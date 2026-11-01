@@ -42,11 +42,10 @@ const permissionEntry = permission.extend({
 });
 /** Short syntax help under Allowed values; the field keeps its full grammar. */
 const VALUES_HELP =
-  "Comma-separated values, inclusive ranges, `*`/`?` patterns and `!` exclusions; `*` allows every value. Enable Comparisons for `<`, `>`, `<=`, `>=`.";
+  'Comma-separated values, inclusive ranges, `*`/`?` patterns and `!` exclusions; `*` allows every value. Comparisons `<`, `>`, `<=`, `>=` work directly. Double-quote literal text such as `"25-12-2026"` or `"a,b"`.';
 const attributeRow = z.object({
   attribute: attributeName,
   values: permission.shape.values.optional(),
-  comparisons: permission.shape.comparisons,
 });
 const userRow = z.object({ username, automatic, explicit: z.boolean() });
 function error(value: unknown) {
@@ -263,13 +262,10 @@ async function roleDetail(name: string): Promise<void> {
     model.data.entries = Object.entries(record.permissions).map((
       [action, values],
     ) =>
-      isAttributeReference(values)
-        ? { action, attribute: values.attribute, comparisons: false }
-        : {
-          action,
-          values: typeof values === "string" ? values : values.comparisons,
-          comparisons: typeof values !== "string",
-        }
+      isAttributeReference(values) ? { action, attribute: values.attribute } : {
+        action,
+        values: typeof values === "string" ? values : values.comparisons,
+      }
     );
     const origin = [
       "managed",
@@ -314,7 +310,7 @@ async function roleDetail(name: string): Promise<void> {
               title: "Permissions",
               bind: "entries",
               key: "action",
-              display: ["action", "values", "comparisons", "attribute"],
+              display: ["action", "values", "attribute"],
             },
             ...(record.copiedFrom
               ? [{
@@ -408,7 +404,7 @@ async function editPermission(
   managed = false,
 ): Promise<void> {
   const model = new Model<Partial<z.infer<typeof permissionEntry>>>(
-    existing ? { ...existing } : { comparisons: false },
+    existing ? { ...existing } : {},
   );
   // Declarations explain each action's value; a missing one keeps defaults.
   const declared = new Map(
@@ -437,9 +433,6 @@ async function editPermission(
             : `For this action: ${declaration.description} `
         }${VALUES_HELP}`,
       }),
-      comparisons: field(permissionEntry.shape.comparisons.optional(), {
-        hidden: valueless,
-      }),
       attribute: field(permissionEntry.shape.attribute, { hidden: valueless }),
     });
     const event = await callScreen({
@@ -450,7 +443,6 @@ async function editPermission(
       controls: [
         { bind: "action", readOnly: !!existing, length: "long" },
         { bind: "values", readOnly: managed, length: "long" },
-        { bind: "comparisons", readOnly: managed },
         { bind: "attribute", readOnly: managed, length: "long" },
       ],
       header: {
@@ -483,11 +475,7 @@ async function editPermission(
         await admin.setPermission(
           name,
           data.action,
-          data.attribute
-            ? { attribute: data.attribute }
-            : data.comparisons
-            ? { comparisons: data.values! }
-            : data.values!,
+          data.attribute ? { attribute: data.attribute } : data.values!,
         );
         return;
       }
@@ -695,7 +683,6 @@ async function assignmentAttributes(
           : typeof values === "string"
           ? values
           : values.comparisons,
-        comparisons: values !== undefined && typeof values !== "string",
       };
     }),
   });
@@ -712,7 +699,7 @@ async function assignmentAttributes(
           type: "list",
           bind: "attributes",
           key: "attribute",
-          display: ["attribute", "values", "comparisons"],
+          display: ["attribute", "values"],
         },
       },
       header: {
@@ -743,7 +730,6 @@ async function assignmentAttributes(
                   bind: "values",
                   length: "long",
                 },
-                { bind: "comparisons" },
               ],
               header: {
                 actions: [{ id: "done", label: "Done", kind: "primary" }],
@@ -757,9 +743,7 @@ async function assignmentAttributes(
         const attributes: Record<string, PermissionValues> = {};
         for (const row of model.data.attributes) {
           if (!row.values) continue;
-          attributes[row.attribute] = row.comparisons
-            ? { comparisons: row.values }
-            : row.values;
+          attributes[row.attribute] = row.values;
         }
         await admin.assignRole(username, roleName, true, attributes);
         sendMessage("Attribute values saved", "success");
