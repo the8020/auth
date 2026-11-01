@@ -1,3 +1,4 @@
+import { msg } from "/p/the8020/auth/i18n/messages.ts";
 import { field, z } from "/p/the8020/db/fields.ts";
 import { username } from "/p/the8020/users/types/user.ts";
 import { expression, pattern } from "../src/matching.ts";
@@ -6,9 +7,8 @@ import { expression, pattern } from "../src/matching.ts";
 export const attributeName: z.ZodString = field(
   z.string().min(1).max(512).regex(/^[A-Za-z0-9][A-Za-z0-9._-]*$/),
   {
-    label: "Attribute",
-    description:
-      "A declared authorization attribute, such as `dlis.einvoice.channel`. Its values come from each role assignment.",
+    label: msg("screens.attribute"),
+    description: msg("auth.a_declared_authorization_attribute_such_as_dlis"),
     valueHelp: async (request) => {
       const { attributeDeclarations } = await import("../src/declarations.ts");
       const { queryValueHelp } = await import("/p/the8020/uui/lists.ts");
@@ -27,9 +27,8 @@ export const attributeName: z.ZodString = field(
 export const roleName: z.ZodString = field(
   z.string().min(1).max(200).refine((value) => !/[\p{Cc}]/u.test(value)),
   {
-    label: "Role",
-    description:
-      "A unique, case-sensitive role name. A role matching a username is automatically assigned to that user.",
+    label: msg("auth.role"),
+    description: msg("auth.a_unique_case_sensitive_role_name_a"),
     valueHelp: async (request) => {
       const { default: Roles } = await import("../tables/roles.ts");
       const { lookupPage } = await import("/p/the8020/db/lookup.ts");
@@ -47,9 +46,8 @@ export const roleName: z.ZodString = field(
 );
 
 export const action: z.ZodString = field(z.string().min(1).max(512), {
-  label: "Action",
-  description:
-    "The authorization key, such as `sales.customer.edit`. Patterns use `*` for any text and `?` for one character; backslash escapes literal punctuation.",
+  label: msg("auth.action"),
+  description: msg("auth.the_authorization_key_such_as_sales_customer"),
   valueHelp: async (request) => {
     const { declarations } = await import("../src/declarations.ts");
     const { queryValueHelp } = await import("/p/the8020/uui/lists.ts");
@@ -61,13 +59,12 @@ export const action: z.ZodString = field(z.string().min(1).max(512), {
   },
 });
 export const value = field(z.string().max(2048), {
-  label: "Value",
-  description: "The single object identifier or value being authorized.",
+  label: msg("auth.value"),
+  description: msg("auth.the_single_object_identifier_or_value_being"),
 });
 const valueExpression = field(z.string().min(1).max(8192), {
-  label: "Allowed values",
-  description:
-    'Comma-separated values, inclusive ranges, `*`/`?` patterns, `!` exclusions and `<`, `<=`, `>`, `>=` comparisons. Double-quote literal text such as `"25-12-2026"` or `"a,b"`; `*` allows every value.',
+  label: msg("auth.allowed_values"),
+  description: msg("auth.allowed_values_help"),
 });
 /** Automatic syntax, including the object form of previously stored entries. */
 export const expressionValues = z.union([
@@ -92,9 +89,8 @@ export const assignmentAttributes = field(
     "An assignment supports up to 64 attributes",
   ),
   {
-    label: "Attribute values",
-    description:
-      "Values for the attributes referenced by the assigned role and the roles it includes, for example `dlis.einvoice.channel` = `SK,CZ`.",
+    label: msg("screens.attribute_values"),
+    description: msg("auth.values_for_the_attributes_referenced_by_the"),
     storage: { type: "json" },
   },
 );
@@ -121,30 +117,28 @@ export const permissions = field(
 export const role = z.object({
   name: roleName,
   description: field(z.string().max(2000), {
-    label: "Description",
-    description: "What this role or authorization action is for.",
+    label: msg("auth.description"),
+    description: msg("auth.what_this_role_or_authorization_action_is"),
   }),
   permissions,
 });
 /** Where a package-declared role or a copy of one comes from. */
 export const roleOrigin = {
   managed: field(z.string().max(200), {
-    label: "Managed by",
-    description:
-      "The package that declares this role. Only its declaration changes the role; copy it to make your own version.",
+    label: msg("auth.managed_by"),
+    description: msg("auth.the_package_that_declares_this_role_only"),
   }),
   managedCommit: field(z.string().max(64), {
-    label: "Package commit",
-    description: "The package commit whose declaration the role matches.",
+    label: msg("auth.package_commit"),
+    description: msg("auth.the_package_commit_whose_declaration_the_role"),
   }),
   collection: field(z.boolean(), {
-    label: "Collection",
-    description: "Groups other roles through inclusion.",
+    label: msg("auth.collection"),
+    description: msg("auth.groups_other_roles_through_inclusion"),
   }),
   obsolete: field(z.boolean(), {
-    label: "Obsolete",
-    description:
-      "No longer declared by its package; kept while users or roles still use it.",
+    label: msg("auth.obsolete"),
+    description: msg("auth.no_longer_declared_by_its_package_kept"),
   }),
   copiedFrom: field(
     z.object({
@@ -153,8 +147,8 @@ export const roleOrigin = {
       commit: z.string().max(64),
     }),
     {
-      label: "Copied from",
-      description: "The package role and commit this role was copied from.",
+      label: msg("screens.copied_from"),
+      description: msg("screens.the_package_role_and_commit_this_role"),
       storage: { type: "json" },
     },
   ),
@@ -167,19 +161,22 @@ export const assignment = z.object({
 export const inclusion = z.object({ role: roleName, included: roleName });
 export const failure = z.object({
   id: field(z.string(), {
-    label: "Check ID",
-    description: "Identifies this failed authorization check.",
+    label: msg("auth.check_id"),
+    description: msg("auth.identifies_this_failed_authorization_check"),
   }),
   username,
   action,
   value,
   checkedAt: field(z.date(), {
-    label: "Checked at",
-    description: "When access was denied (UTC).",
+    label: msg("auth.checked_at"),
+    description: msg("auth.when_access_was_denied_utc"),
   }),
   reason: field(
     z.enum(["no_roles", "no_action_match", "value_not_allowed", "role_limit"]),
-    { label: "Reason", description: "Why no reachable role granted access." },
+    {
+      label: msg("auth.reason"),
+      description: msg("auth.why_no_reachable_role_granted_access"),
+    },
   ),
   details: field(
     z.array(
@@ -190,8 +187,8 @@ export const failure = z.object({
       }),
     ),
     {
-      label: "Details",
-      description: "Evaluation evidence, limited to the first 100 entries.",
+      label: msg("screens.details"),
+      description: msg("auth.evaluation_evidence_limited_to_the_first_100"),
       storage: { type: "json" },
     },
   ),
@@ -200,18 +197,18 @@ export const failure = z.object({
 /** One audited successful authorization check. */
 export const grant = z.object({
   id: field(z.string(), {
-    label: "Check ID",
-    description: "Identifies this successful authorization check.",
+    label: msg("auth.check_id"),
+    description: msg("auth.identifies_this_successful_authorization_check"),
   }),
   username,
   action,
   value,
   checkedAt: field(z.date(), {
-    label: "Checked at",
-    description: "When access was granted (UTC).",
+    label: msg("auth.checked_at"),
+    description: msg("auth.when_access_was_granted_utc"),
   }),
   role: field(z.string(), {
-    label: "Granted by",
-    description: "The first reachable role whose entry allowed the check.",
+    label: msg("auth.granted_by"),
+    description: msg("auth.the_first_reachable_role_whose_entry_allowed"),
   }),
 });

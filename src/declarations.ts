@@ -1,3 +1,4 @@
+import { metadataText } from "/p/the8020/packages/localization.ts";
 import { parse } from "/p/the8020/packages/toml.ts";
 import { action, attributeName, role } from "../types/auth.ts";
 
@@ -103,9 +104,26 @@ async function read(
           if ((await Deno.stat(file)).size > 1 << 20) {
             throw new Error("Declaration exceeds 1 MiB");
           }
-          return Object.entries(parse(await Deno.readTextFile(file))).map((
-            [name, value],
-          ) => ({ name: key.parse(name), ...entry(value, tables) }));
+          const packageId = decodeURIComponent(
+            file.pathname.slice(root.pathname.length).split("/").slice(0, 2)
+              .join("/"),
+          );
+          return await Promise.all(
+            Object.entries(parse(await Deno.readTextFile(file))).map(
+              async ([name, value]) => {
+                const parsed = entry(value, tables);
+                return {
+                  name: key.parse(name),
+                  ...parsed,
+                  description: await metadataText(
+                    packageId,
+                    `declarations.${fileName.slice(0, -5)}.${name}`,
+                    parsed.description,
+                  ),
+                };
+              },
+            ),
+          );
         } catch (error) {
           if (!(error instanceof Deno.errors.NotFound)) {
             console.warn(

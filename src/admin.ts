@@ -1,3 +1,4 @@
+import { metadataText } from "/p/the8020/packages/localization.ts";
 import { AdminCommandError } from "@the8020/kernel";
 import { type Database, db } from "/p/the8020/db/mod.ts";
 import type { Transaction } from "/p/the8020/db/kysely.ts";
@@ -295,11 +296,24 @@ export async function ownRoles() {
   const rows = await rolesOf(context.username);
   const described = rows.length
     ? new Map(
-      (await Roles.select(["name", "description"]).where(
-        "name",
-        "in",
-        rows.map((row) => row.role),
-      ).execute()).map((row) => [row.name, row.description]),
+      await Promise.all(
+        (await Roles.select(["name", "description", "managed"]).where(
+          "name",
+          "in",
+          rows.map((row) => row.role),
+        ).execute()).map(async (
+          row,
+        ): Promise<[string, string]> => [
+          row.name,
+          row.managed
+            ? await metadataText(
+              row.managed,
+              `declarations.auth-roles.${row.name}`,
+              row.description,
+            )
+            : row.description,
+        ]),
+      ),
     )
     : new Map<string, string>();
   return rows.map((row) => ({

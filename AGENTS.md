@@ -106,8 +106,10 @@ relevant child AGENTS.md
 
 ## Child DOX Index
 
-This root owns all package sources, schemas, declarations, programs, and checks.
-No child DOX documents.
+- [i18n/AGENTS.md](i18n/AGENTS.md): English and Czech presentation catalogs.
+
+This root owns package sources, schemas, declarations, programs, and checks
+outside the catalog child.
 
 # Purpose
 
@@ -315,6 +317,9 @@ No child DOX documents.
   package no longer declares (or an inactive package's roles) become `obsolete`
   while assigned or included, otherwise they are deleted. Problems go to the
   package's index error; other roles still sync.
+- Role screens and My account localize managed descriptions using the owning
+  package’s `declarations.auth-roles.<role>` key. Stored descriptions, copies,
+  and user-authored text remain unchanged.
 - Managed roles are read-only to `saveRole`, `setPermission`, `deleteRole` and
   gaining inclusions; they can be assigned and included in other roles.
   `copyRole(source, target)` (`auth.roles.copy`) creates an ordinary role;

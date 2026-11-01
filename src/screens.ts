@@ -1,3 +1,6 @@
+import { metadataText } from "/p/the8020/packages/localization.ts";
+import { text as localizedText } from "/p/the8020/i18n/mod.ts";
+import { msg } from "/p/the8020/auth/i18n/messages.ts";
 import {
   BACK_EVENT,
   callScreen,
@@ -26,23 +29,22 @@ import * as audit from "./audit.ts";
 import * as defaults from "./defaults.ts";
 
 const automatic = field(z.boolean(), {
-  label: "Automatic",
-  description:
-    "Granted because this role name matches the username; remove the role to remove this automatic assignment.",
+  label: msg("screens.automatic"),
+  description: msg("screens.granted_because_this_role_name_matches_the"),
 });
 const roleRow = z.object({ role: roleName, automatic, explicit: z.boolean() });
 /** An entry takes its values either from the expression or from an attribute. */
 const permissionEntry = permission.extend({
   values: permission.shape.values.optional(),
   attribute: field(attributeName.optional(), {
-    label: "Attribute",
-    description:
-      "Take the allowed values from this attribute of each assignment instead of Allowed values.",
+    label: msg("screens.attribute"),
+    description: msg("screens.take_the_allowed_values_from_this_attribute"),
   }),
 });
 /** Short syntax help under Allowed values; the field keeps its full grammar. */
-const VALUES_HELP =
-  'Comma-separated values, inclusive ranges, `*`/`?` patterns and `!` exclusions; `*` allows every value. Comparisons `<`, `>`, `<=`, `>=` work directly. Double-quote literal text such as `"25-12-2026"` or `"a,b"`.';
+const VALUES_HELP = msg(
+  "screens.comma_separated_values_inclusive_ranges_patterns_and",
+);
 const attributeRow = z.object({
   attribute: attributeName,
   values: permission.shape.values.optional(),
@@ -64,7 +66,9 @@ async function pick(
       schema: z.object({ value: schema.optional() }),
       model,
       controls: [{ bind: "value", length: "long" }],
-      header: { actions: [{ id: "save", label: "Add", kind: "primary" }] },
+      header: {
+        actions: [{ id: "save", label: msg("screens.add"), kind: "primary" }],
+      },
     });
     if (event.action === BACK_EVENT) return;
     if (event.action === "save" && model.data.value) return model.data.value;
@@ -75,7 +79,7 @@ async function pick(
 function confirm(
   title: string,
   message: string,
-  label = "Delete",
+  label = localizedText(msg("ui.delete")),
   kind: "danger" | "primary" = "danger",
 ): Promise<boolean> {
   return confirmAction({
@@ -98,22 +102,35 @@ export async function roles(selected?: string): Promise<void> {
   });
   const model = new Model<z.infer<typeof schema>>({ roles: [] });
   while (true) {
-    model.data.roles = (await admin.listRoles()).map((row) => ({
-      ...row,
-      managed: row.managed ?? "",
-    }));
+    model.data.roles = await Promise.all(
+      (await admin.listRoles()).map(async (row) => ({
+        ...row,
+        description: row.managed
+          ? await metadataText(
+            row.managed,
+            `declarations.auth-roles.${row.name}`,
+            row.description,
+          )
+          : row.description,
+        managed: row.managed ?? "",
+      })),
+    );
     const event = await callScreen({
       id: "auth-roles",
-      title: "Roles",
+      title: msg("screens.roles"),
       schema,
       model,
       layout: {
         schema: 1,
         id: "auth-roles",
         root: {
-          toolbar: [{ id: "add", label: "Create role", kind: "primary" }, {
+          toolbar: [{
+            id: "add",
+            label: msg("screens.create_role"),
+            kind: "primary",
+          }, {
             id: "refresh",
-            label: "Refresh",
+            label: msg("screens.refresh"),
           }],
           type: "list",
           bind: "roles",
@@ -123,12 +140,12 @@ export async function roles(selected?: string): Promise<void> {
         },
       },
       header: {
-        actions: [{ id: "defaults", label: "Default roles" }, {
+        actions: [{ id: "defaults", label: msg("screens.default_roles") }, {
           id: "audit",
-          label: "Audit",
+          label: msg("screens.audit"),
         }, {
           id: "failures",
-          label: "Failed checks",
+          label: msg("screens.failed_checks"),
         }],
       },
     });
@@ -166,7 +183,9 @@ async function editRole(
   while (true) {
     const event = await callScreen({
       id: "auth-role-edit",
-      title: existing ? "Edit role" : "Create role",
+      title: existing
+        ? localizedText(msg("ui.edit_role"))
+        : localizedText(msg("ui.create_role")),
       schema: schema.partial({ name: true }),
       model,
       controls: [{ bind: "name", readOnly: !!existing, length: "long" }, {
@@ -174,7 +193,11 @@ async function editRole(
         length: "long",
       }, { bind: "collection" }],
       header: {
-        actions: [{ id: "save", label: "Save role", kind: "primary" }],
+        actions: [{
+          id: "save",
+          label: msg("screens.save_role"),
+          kind: "primary",
+        }],
       },
     });
     if (event.action === BACK_EVENT) return;
@@ -193,25 +216,24 @@ async function editRole(
 
 const templateChange = z.object({
   key: field(z.string(), {
-    label: "Action or role",
-    description: "The permission action or included role that differs.",
+    label: msg("screens.action_or_role"),
+    description: msg("screens.the_permission_action_or_included_role_that"),
   }),
   kind: field(z.string(), {
-    label: "Kind",
-    description: "Whether a permission or an included role differs.",
+    label: msg("screens.kind"),
+    description: msg("screens.whether_a_permission_or_an_included_role"),
   }),
   change: field(z.string(), {
-    label: "Change",
-    description:
-      "Added or removed in the template since the copy, or changed values.",
+    label: msg("screens.change"),
+    description: msg("screens.added_or_removed_in_the_template_since"),
   }),
   template: field(z.string(), {
-    label: "Template",
-    description: "The template's current values.",
+    label: msg("screens.template"),
+    description: msg("screens.the_template_s_current_values"),
   }),
   copy: field(z.string(), {
-    label: "This copy",
-    description: "This role's values.",
+    label: msg("screens.this_copy"),
+    description: msg("screens.this_role_s_values"),
   }),
 });
 
@@ -221,8 +243,8 @@ async function roleDetail(name: string): Promise<void> {
     collection: roleOrigin.collection,
     obsolete: roleOrigin.obsolete,
     copiedFrom: field(z.string(), {
-      label: "Copied from",
-      description: "The package role and commit this role was copied from.",
+      label: msg("screens.copied_from"),
+      description: msg("screens.the_package_role_and_commit_this_role"),
     }),
     entries: permissionEntry.array(),
     changes: templateChange.array(),
@@ -243,7 +265,13 @@ async function roleDetail(name: string): Promise<void> {
     const template = record.copiedFrom
       ? await admin.templateChanges(name)
       : undefined;
-    model.data.description = record.description;
+    model.data.description = record.managed
+      ? await metadataText(
+        record.managed,
+        `declarations.auth-roles.${record.name}`,
+        record.description,
+      )
+      : record.description;
     model.data.managed = record.managed ?? "";
     model.data.collection = record.collection;
     model.data.obsolete = record.obsolete;
@@ -275,7 +303,7 @@ async function roleDetail(name: string): Promise<void> {
     ];
     const event = await callScreen({
       id: "auth-role",
-      title: `Role ${name}`,
+      title: msg("screens.role_name", { name: name }),
       schema,
       model,
       controls: [
@@ -303,11 +331,11 @@ async function roleDetail(name: string): Promise<void> {
             {
               toolbar: managed ? [] : [{
                 id: "permission",
-                label: "Add permission",
+                label: msg("screens.add_permission"),
                 kind: "primary",
               }],
               type: "list",
-              title: "Permissions",
+              title: msg("screens.permissions"),
               bind: "entries",
               key: "action",
               display: ["action", "values", "attribute"],
@@ -317,12 +345,12 @@ async function roleDetail(name: string): Promise<void> {
                 toolbar: model.data.changes.length
                   ? [{
                     id: "adopt",
-                    label: "Adopt template changes",
+                    label: msg("screens.adopt_template_changes"),
                     kind: "primary" as const,
                   }]
                   : [],
                 type: "list",
-                title: "Changes in the template",
+                title: msg("screens.changes_in_the_template"),
                 bind: "changes",
                 key: "key",
                 display: ["key", "kind", "change", "template", "copy"],
@@ -333,14 +361,18 @@ async function roleDetail(name: string): Promise<void> {
       },
       header: {
         actions: [
-          { id: "included", label: "Included roles" },
-          { id: "users", label: "Users" },
-          { id: "copy", label: "Copy role" },
+          { id: "included", label: msg("screens.included_roles") },
+          { id: "users", label: msg("screens.users") },
+          { id: "copy", label: msg("screens.copy_role") },
           ...(managed ? [] : [
-            { id: "edit", label: "Edit role" },
-            { id: "delete", label: "Delete role", kind: "danger" as const },
+            { id: "edit", label: msg("screens.edit_role") },
+            {
+              id: "delete",
+              label: msg("screens.delete_role"),
+              kind: "danger" as const,
+            },
           ]),
-          { id: "refresh", label: "Refresh" },
+          { id: "refresh", label: msg("screens.refresh") },
         ],
       },
     });
@@ -362,7 +394,9 @@ async function roleDetail(name: string): Promise<void> {
       }
       if (event.action === "edit") await presentModal(() => editRole(record));
       if (event.action === "copy") {
-        const target = await presentModal(() => pick("Copy as", roleName));
+        const target = await presentModal(() =>
+          pick(localizedText(msg("ui.copy_as")), roleName)
+        );
         if (target) {
           await admin.copyRole(name, target);
           await presentPage(() => roleDetail(target));
@@ -371,9 +405,14 @@ async function roleDetail(name: string): Promise<void> {
       if (
         event.action === "adopt" &&
         await confirm(
-          "Adopt template changes",
-          `The permissions and included roles of ${name} will be replaced with its template's.`,
-          "Adopt changes",
+          localizedText(msg("screens.adopt_template_changes")),
+          localizedText(
+            msg(
+              "ui.the_permissions_and_included_roles_of_value1_will_be_replaced_with_its_template_s",
+              { value1: name },
+            ),
+          ),
+          localizedText(msg("ui.adopt_changes")),
           "primary",
         )
       ) await admin.adoptTemplate(name);
@@ -384,9 +423,13 @@ async function roleDetail(name: string): Promise<void> {
       if (
         event.action === "delete" &&
         await confirm(
-          "Delete role",
-          `Role ${name} and all its assignments will be deleted.`,
-          "Delete role",
+          localizedText(msg("screens.delete_role")),
+          localizedText(
+            msg("ui.role_value1_and_all_its_assignments_will_be_deleted", {
+              value1: name,
+            }),
+          ),
+          localizedText(msg("ui.delete_role")),
         )
       ) {
         await admin.deleteRole(name);
@@ -420,24 +463,32 @@ async function editPermission(
       action: field(permissionEntry.shape.action.optional(), {
         reactive: true,
         ...(declaration === undefined ? {} : {
-          description: `${declaration.description}${
-            valueless ? " Granted as a whole; it has no value to restrict." : ""
-          }`,
+          description: msg("screens.value1_value2", {
+            value1: declaration.description,
+            value2: valueless
+              ? localizedText(
+                msg("ui.granted_as_a_whole_it_has_no_value_to_restrict"),
+              )
+              : "",
+          }),
         }),
       }),
       values: field(permissionEntry.shape.values, {
         hidden: valueless,
-        description: `${
-          declaration === undefined
-            ? ""
-            : `For this action: ${declaration.description} `
-        }${VALUES_HELP}`,
+        description: msg("screens.value1_values_help", {
+          value1: declaration === undefined ? "" : localizedText(
+            msg("ui.for_this_action_value1", {
+              value1: declaration.description,
+            }),
+          ),
+          VALUES_HELP: localizedText(VALUES_HELP),
+        }),
       }),
       attribute: field(permissionEntry.shape.attribute, { hidden: valueless }),
     });
     const event = await callScreen({
       id: "auth-permission",
-      title: `Permission · ${name}`,
+      title: msg("screens.permission_name", { name: name }),
       schema,
       model,
       controls: [
@@ -447,11 +498,15 @@ async function editPermission(
       ],
       header: {
         actions: managed ? [] : [
-          { id: "save", label: "Save permission", kind: "primary" },
+          {
+            id: "save",
+            label: msg("screens.save_permission"),
+            kind: "primary",
+          },
           ...(existing
             ? [{
               id: "delete",
-              label: "Delete permission",
+              label: msg("screens.delete_permission"),
               kind: "danger" as const,
             }]
             : []),
@@ -469,7 +524,11 @@ async function editPermission(
         }
         if (!data.attribute && !data.values) {
           throw new TypeError(
-            "Enter Allowed values (* allows every value) or choose an Attribute.",
+            localizedText(
+              msg(
+                "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute",
+              ),
+            ),
           );
         }
         await admin.setPermission(
@@ -482,9 +541,14 @@ async function editPermission(
       if (
         existing && event.action === "delete" &&
         await confirm(
-          "Delete permission",
-          `${existing.action} will be removed from role ${name}.`,
-          "Delete permission",
+          localizedText(msg("screens.delete_permission")),
+          localizedText(
+            msg("ui.value1_will_be_removed_from_role_value2", {
+              value1: existing.action,
+              value2: name,
+            }),
+          ),
+          localizedText(msg("ui.delete_permission")),
         )
       ) {
         await admin.setPermission(name, existing.action);
@@ -503,16 +567,20 @@ async function includedRoles(name: string): Promise<void> {
     model.data.roles = await admin.includedRoles(name);
     const event = await callScreen({
       id: "auth-includes",
-      title: `Included roles · ${name}`,
+      title: msg("screens.included_roles_name", { name: name }),
       schema,
       model,
       layout: {
         schema: 1,
         id: "auth-includes",
         root: {
-          toolbar: [{ id: "add", label: "Include role", kind: "primary" }, {
+          toolbar: [{
+            id: "add",
+            label: msg("screens.include_role"),
+            kind: "primary",
+          }, {
             id: "refresh",
-            label: "Refresh",
+            label: msg("screens.refresh"),
           }],
           type: "list",
           bind: "roles",
@@ -525,7 +593,7 @@ async function includedRoles(name: string): Promise<void> {
     try {
       if (event.action === "add") {
         const included = await presentModal(() =>
-          pick("Include role", roleName)
+          pick(localizedText(msg("ui.include_role")), roleName)
         );
         if (included) await admin.includeRole(name, included);
       }
@@ -534,14 +602,16 @@ async function includedRoles(name: string): Promise<void> {
         await presentModal(async () => {
           const selected = await callScreen({
             id: "auth-included",
-            title: `Included role ${included}`,
+            title: msg("screens.included_role_included", {
+              included: included,
+            }),
             schema: z.object({ role: roleName }),
             model: new Model({ role: included }),
             controls: [{ bind: "role", readOnly: true }],
             header: {
-              actions: [{ id: "open", label: "Open role" }, {
+              actions: [{ id: "open", label: msg("screens.open_role") }, {
                 id: "remove",
-                label: "Remove inclusion",
+                label: msg("screens.remove_inclusion"),
                 kind: "danger",
               }],
             },
@@ -572,17 +642,21 @@ export async function userRoles(name: string): Promise<void> {
     model.data.roles = assigned.map(({ attributes: _, ...row }) => row);
     const event = await callScreen({
       id: "auth-user-roles",
-      title: `Roles for ${name}`,
+      title: msg("screens.roles_for_name", { name: name }),
       schema,
       model,
       layout: {
         schema: 1,
         id: "auth-user-roles",
         root: {
-          toolbar: [{ id: "add", label: "Assign role", kind: "primary" }, {
+          toolbar: [{
+            id: "add",
+            label: msg("screens.assign_role"),
+            kind: "primary",
+          }, {
             id: "personal",
-            label: "Personal permissions",
-          }, { id: "refresh", label: "Refresh" }],
+            label: msg("screens.personal_permissions"),
+          }, { id: "refresh", label: msg("screens.refresh") }],
           type: "list",
           bind: "roles",
           key: "role",
@@ -590,16 +664,18 @@ export async function userRoles(name: string): Promise<void> {
         },
       },
       header: {
-        actions: [{ id: "user", label: "Open user" }, {
+        actions: [{ id: "user", label: msg("screens.open_user") }, {
           id: "failures",
-          label: "Failed checks",
+          label: msg("screens.failed_checks"),
         }],
       },
     });
     if (event.action === BACK_EVENT) return;
     try {
       if (event.action === "add") {
-        const role = await presentModal(() => pick("Assign role", roleName));
+        const role = await presentModal(() =>
+          pick(localizedText(msg("ui.assign_role")), roleName)
+        );
         if (role) {
           await admin.assignRole(name, role);
           // A role referencing attributes needs their values right away.
@@ -619,7 +695,7 @@ export async function userRoles(name: string): Promise<void> {
         await presentModal(async () => {
           const selected = await callScreen({
             id: "auth-assignment",
-            title: `${name} · ${row.role}`,
+            title: msg("screens.name_value2", { name: name, value2: row.role }),
             schema: roleRow,
             model: new Model(row),
             controls: [{ bind: "role", readOnly: true }, {
@@ -628,14 +704,17 @@ export async function userRoles(name: string): Promise<void> {
             }],
             header: {
               actions: [
-                { id: "open", label: "Open role" },
+                { id: "open", label: msg("screens.open_role") },
                 ...(row.explicit
-                  ? [{ id: "attributes", label: "Attribute values" }]
+                  ? [{
+                    id: "attributes",
+                    label: msg("screens.attribute_values"),
+                  }]
                   : []),
                 ...(row.explicit
                   ? [{
                     id: "remove",
-                    label: "Remove assignment",
+                    label: msg("screens.remove_assignment"),
                     kind: "danger" as const,
                   }]
                   : []),
@@ -689,7 +768,10 @@ async function assignmentAttributes(
   while (true) {
     const event = await callScreen({
       id: "auth-assignment-attributes",
-      title: `${username} · ${roleName} · attribute values`,
+      title: msg("screens.username_rolename_attribute_values", {
+        username: username,
+        roleName: roleName,
+      }),
       schema,
       model,
       layout: {
@@ -705,7 +787,7 @@ async function assignmentAttributes(
       header: {
         actions: [{
           id: "save",
-          label: "Save attribute values",
+          label: msg("screens.save_attribute_values"),
           kind: "primary",
         }],
       },
@@ -721,7 +803,10 @@ async function assignmentAttributes(
           const result = await presentModal(() =>
             callScreen({
               id: "auth-assignment-attribute",
-              title: `${roleName} · ${row.attribute}`,
+              title: msg("screens.rolename_value2", {
+                roleName: roleName,
+                value2: row.attribute,
+              }),
               schema: attributeRow,
               model: edited,
               controls: [
@@ -732,7 +817,11 @@ async function assignmentAttributes(
                 },
               ],
               header: {
-                actions: [{ id: "done", label: "Done", kind: "primary" }],
+                actions: [{
+                  id: "done",
+                  label: msg("screens.done"),
+                  kind: "primary",
+                }],
               },
             })
           );
@@ -746,7 +835,10 @@ async function assignmentAttributes(
           attributes[row.attribute] = row.values;
         }
         await admin.assignRole(username, roleName, true, attributes);
-        sendMessage("Attribute values saved", "success");
+        sendMessage(
+          localizedText(msg("screens.attribute_values_saved")),
+          "success",
+        );
         return;
       }
     } catch (e) {
@@ -769,16 +861,20 @@ async function roleUsers(name: string): Promise<void> {
     model.data.users = await admin.roleUsers(name);
     const event = await callScreen({
       id: "auth-role-users",
-      title: `Users with ${name}`,
+      title: msg("screens.users_with_name", { name: name }),
       schema,
       model,
       layout: {
         schema: 1,
         id: "auth-role-users",
         root: {
-          toolbar: [{ id: "add", label: "Assign user", kind: "primary" }, {
+          toolbar: [{
+            id: "add",
+            label: msg("screens.assign_user"),
+            kind: "primary",
+          }, {
             id: "refresh",
-            label: "Refresh",
+            label: msg("screens.refresh"),
           }],
           type: "list",
           bind: "users",
@@ -790,7 +886,9 @@ async function roleUsers(name: string): Promise<void> {
     if (event.action === BACK_EVENT) return;
     try {
       if (event.action === "add") {
-        const user = await presentModal(() => pick("Assign user", username));
+        const user = await presentModal(() =>
+          pick(localizedText(msg("ui.assign_user")), username)
+        );
         if (user) {
           await admin.assignRole(user, name);
           if ((await admin.roleAttributes(name)).length) {
@@ -805,7 +903,10 @@ async function roleUsers(name: string): Promise<void> {
         await presentModal(async () => {
           const selected = await callScreen({
             id: "auth-member",
-            title: `${name} · ${row.username}`,
+            title: msg("screens.name_value2", {
+              name: name,
+              value2: row.username,
+            }),
             schema: userRow,
             model: new Model(row),
             controls: [{ bind: "username", readOnly: true }, {
@@ -814,15 +915,18 @@ async function roleUsers(name: string): Promise<void> {
             }],
             header: {
               actions: [
-                { id: "open", label: "Open user" },
-                { id: "roles", label: "User roles" },
+                { id: "open", label: msg("screens.open_user") },
+                { id: "roles", label: msg("screens.user_roles") },
                 ...(row.explicit
-                  ? [{ id: "attributes", label: "Attribute values" }]
+                  ? [{
+                    id: "attributes",
+                    label: msg("screens.attribute_values"),
+                  }]
                   : []),
                 ...(row.explicit
                   ? [{
                     id: "remove",
-                    label: "Remove assignment",
+                    label: msg("screens.remove_assignment"),
                     kind: "danger" as const,
                   }]
                   : []),
@@ -860,7 +964,9 @@ export async function failures(name?: string): Promise<void> {
     model.data.failures = await admin.failedChecks(name, offset);
     const event = await callScreen({
       id: "auth-failures",
-      title: name ? `Failed checks · ${name}` : "Failed authorization checks",
+      title: name
+        ? localizedText(msg("ui.failed_checks_value1", { value1: name }))
+        : localizedText(msg("ui.failed_authorization_checks")),
       schema,
       model,
       layout: {
@@ -868,10 +974,12 @@ export async function failures(name?: string): Promise<void> {
         id: "auth-failures",
         root: {
           toolbar: [
-            { id: "refresh", label: "Refresh" },
-            ...(offset ? [{ id: "previous", label: "Previous 100" }] : []),
+            { id: "refresh", label: msg("screens.refresh") },
+            ...(offset
+              ? [{ id: "previous", label: msg("screens.previous_100") }]
+              : []),
             ...(model.data.failures.length === 100
-              ? [{ id: "next", label: "Next 100" }]
+              ? [{ id: "next", label: msg("screens.next_100") }]
               : []),
           ],
           type: "list",
@@ -891,14 +999,14 @@ export async function failures(name?: string): Promise<void> {
       await presentModal(async () => {
         const detail = failure.omit({ details: true }).extend({
           details: field(z.string(), {
-            label: "Details",
+            label: msg("screens.details"),
             control: "textarea",
             rowSpan: 8,
           }),
         });
         await callScreen({
           id: "auth-failure",
-          title: "Failed check",
+          title: msg("screens.failed_check"),
           schema: detail,
           model: new Model({
             ...row,
@@ -920,9 +1028,8 @@ export async function failures(name?: string): Promise<void> {
 }
 
 const retention = field(audit.retentionDays, {
-  label: "Keep records (days)",
-  description:
-    "Audited successes and failed checks older than this are removed every night.",
+  label: msg("screens.keep_records_days"),
+  description: msg("screens.audited_successes_and_failed_checks_older_than"),
 });
 
 /** Audited successful checks, newest first, with the shared retention. */
@@ -940,7 +1047,9 @@ export async function auditLog(name?: string): Promise<void> {
     }
     const event = await callScreen({
       id: "auth-audit",
-      title: name ? `Audit · ${name}` : "Authorization audit",
+      title: name
+        ? localizedText(msg("ui.audit_name", { name }))
+        : localizedText(msg("ui.authorization_audit")),
       schema,
       model,
       controls: [{ bind: "days", readOnly: true }],
@@ -951,11 +1060,13 @@ export async function auditLog(name?: string): Promise<void> {
           type: "stack",
           children: [{ type: "detail", controls: ["days"] }, {
             toolbar: [
-              { id: "refresh", label: "Refresh" },
-              { id: "retention", label: "Change retention" },
-              ...(offset ? [{ id: "previous", label: "Previous 100" }] : []),
+              { id: "refresh", label: msg("screens.refresh") },
+              { id: "retention", label: msg("screens.change_retention") },
+              ...(offset
+                ? [{ id: "previous", label: msg("screens.previous_100") }]
+                : []),
               ...(model.data.grants.length === 100
-                ? [{ id: "next", label: "Next 100" }]
+                ? [{ id: "next", label: msg("screens.next_100") }]
                 : []),
             ],
             type: "list",
@@ -976,18 +1087,29 @@ export async function auditLog(name?: string): Promise<void> {
         while (true) {
           const result = await callScreen({
             id: "auth-retention",
-            title: "Audit retention",
+            title: msg("screens.audit_retention"),
             schema: z.object({ days: retention }),
             model: edit,
             header: {
-              actions: [{ id: "save", label: "Save", kind: "primary" }],
+              actions: [{
+                id: "save",
+                label: msg("screens.save"),
+                kind: "primary",
+              }],
             },
           });
           if (result.action === BACK_EVENT) return;
           if (result.action !== "save") continue;
           try {
             await audit.setAuditRetention(edit.data.days);
-            sendMessage(`Records are kept for ${edit.data.days} days`, "info");
+            sendMessage(
+              localizedText(
+                msg("screens.records_are_kept_for_value1_days", {
+                  value1: edit.data.days,
+                }),
+              ),
+              "info",
+            );
             return;
           } catch (e) {
             error(e);
@@ -1005,8 +1127,8 @@ export async function ownRoles(): Promise<void> {
       role: roleName,
       description: role.shape.description,
       attributes: field(z.string(), {
-        label: "Values",
-        description: "Attribute values given with this assignment.",
+        label: msg("screens.values"),
+        description: msg("screens.attribute_values_given_with_this_assignment"),
       }),
     }).array(),
   });
@@ -1028,14 +1150,14 @@ export async function ownRoles(): Promise<void> {
     }
     const event = await callScreen({
       id: "auth-own-roles",
-      title: "My roles",
+      title: msg("screens.my_roles"),
       schema,
       model,
       layout: {
         schema: 1,
         id: "auth-own-roles",
         root: {
-          toolbar: [{ id: "refresh", label: "Refresh" }],
+          toolbar: [{ id: "refresh", label: msg("screens.refresh") }],
           type: "list",
           bind: "roles",
           key: "role",
@@ -1052,9 +1174,8 @@ export async function ownRoles(): Promise<void> {
 export async function defaultRolesScreen(): Promise<void> {
   const schema = z.object({
     roles: field(z.array(roleName).max(32), {
-      label: "Default roles",
-      description:
-        "Every new user receives these roles. Existing users keep their roles.",
+      label: msg("screens.default_roles"),
+      description: msg("screens.every_new_user_receives_these_roles_existing"),
       length: "long",
     }),
   });
@@ -1068,18 +1189,18 @@ export async function defaultRolesScreen(): Promise<void> {
   while (true) {
     const event = await callScreen({
       id: "auth-default-roles",
-      title: "Default roles of new users",
+      title: msg("screens.default_roles_of_new_users"),
       schema,
       model,
       header: {
-        actions: [{ id: "save", label: "Save", kind: "primary" }],
+        actions: [{ id: "save", label: msg("screens.save"), kind: "primary" }],
       },
     });
     if (event.action === BACK_EVENT) return;
     if (event.action !== "save") continue;
     try {
       model.data.roles = await defaults.setDefaultRoles(model.data.roles);
-      sendMessage("Default roles saved", "success");
+      sendMessage(localizedText(msg("screens.default_roles_saved")), "success");
       return;
     } catch (e) {
       error(e);
