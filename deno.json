@@ -19,6 +19,6 @@
     "test": "deno test --allow-read --allow-write .",
     "test:browser": "deno run -A --config=../uui/deno.json ../uui/presentation_browser_e2e.ts --fixture=../auth/browser_fixture.ts",
     "test:postgres": "AUTH_TEST_POSTGRES=1 deno test --allow-env --allow-run=psql --allow-read --allow-write src/sql_postgres_test.ts",
-    "check:i18n": "deno run --allow-read ../i18n/check.ts --complete=cs ."
+    "check:i18n": "deno run --allow-read ../i18n/check.ts --complete=builtin ."
   }
 }
