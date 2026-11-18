@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "失败的授权检查",
     "ui.authorization_audit": "授权审计",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "请输入允许值（* 允许所有值）或选择属性。",
-    "ui.audit_name": "审计 · {name}"
+    "ui.audit_name": "审计 · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "{name} 角色由 {value2} 管理;复制它以创建自己的版本",
+    "errors.role_already_exists": "{value1} 角色已经存在",
+    "errors.role_already_exists_2": "{target} 角色已经存在",
+    "errors.role_is_not_a_copy_of_a_package_role": "角色{name}不是包装角色的副本",
+    "errors.permission_denied": "拒绝许可:{action} ({value})",
+    "errors.incomplete_escape": "不完整的逃跑",
+    "errors.unclosed_quoted_value": "未关闭的报价值",
+    "errors.a_nonempty_pattern_is_required": "需要一个不空的模式",
+    "errors.quote_the_complete_literal_value": "引用完整的字面价值",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "一个有序的终点必须是字面值",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "使用两个范围终点;引用包含字符串的字体文本",
+    "errors.range_start_exceeds_its_end": "距离开始超过其终点",
+    "errors.expected_a_string_or": "预期一个字符串或{ comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "保存时间必须为1–3650天",
+    "errors.at_most_valid_role_names_are_allowed": "最多允许{MAX_DEFAULT_ROLES}有效角色名称",
+    "errors.role_does_not_exist": "{missing} 角色不存在",
+    "errors.user_not_found_named": "用户{name}未找到",
+    "errors.role_not_found_named": "没有找到{name}的角色",
+    "errors.assignment_attribute_limit": "一项任务支持最多64个属性"
   }
 }

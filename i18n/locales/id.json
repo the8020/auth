@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Pemeriksaan otorisasi gagal",
     "ui.authorization_audit": "Audit otorisasi",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Masukkan Nilai yang diizinkan (* mengizinkan semua nilai) atau pilih Atribut.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Peran {name} dikelola oleh {value2}; salin untuk membuat versi Anda sendiri",
+    "errors.role_already_exists": "Peran {value1} sudah ada",
+    "errors.role_already_exists_2": "Peran {target} sudah ada",
+    "errors.role_is_not_a_copy_of_a_package_role": "Peran {name} bukan salinan peran paket",
+    "errors.permission_denied": "Izin ditolak: {action} ({value})",
+    "errors.incomplete_escape": "Menembus tidak lengkap",
+    "errors.unclosed_quoted_value": "Nilai dikutip yang tidak tertutup",
+    "errors.a_nonempty_pattern_is_required": "Pola yang tidak kosong diperlukan",
+    "errors.quote_the_complete_literal_value": "Mengutip nilai literal lengkap",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Titik akhir yang terorganisir harus memiliki nilai literal",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Gunakan dua titik akhir kisaran; sebut teks literal yang berisi tanda tanda",
+    "errors.range_start_exceeds_its_end": "Mulai jarak melebihi ujungnya",
+    "errors.expected_a_string_or": "Tunggu string atau { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "Penyimpanan harus 1–3650 hari",
+    "errors.at_most_valid_role_names_are_allowed": "tidak lebih dari {MAX_DEFAULT_ROLES} nama peran yang valid diizinkan",
+    "errors.role_does_not_exist": "peran {missing} tidak ada",
+    "errors.user_not_found_named": "Pengguna {name} tidak ditemukan",
+    "errors.role_not_found_named": "Ruang {name} tidak ditemukan",
+    "errors.assignment_attribute_limit": "Tugas mendukung hingga 64 atribut"
   }
 }

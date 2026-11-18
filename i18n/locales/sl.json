@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Neuspešna avtorizacijska preverjanja",
     "ui.authorization_audit": "Avtorizacijska revizija",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Vnesite Dovoljene vrednosti (* dovoli vsako vrednost) ali izberite Atribut.",
-    "ui.audit_name": "Revizija · {name}"
+    "ui.audit_name": "Revizija · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Vloga {name} upravlja {value2}; kopirajte jo, da ustvarite lastno različico",
+    "errors.role_already_exists": "Vloga {value1} že obstaja",
+    "errors.role_already_exists_2": "Vloga {target} že obstaja",
+    "errors.role_is_not_a_copy_of_a_package_role": "Vloga {name} ni kopija paketske vloge",
+    "errors.permission_denied": "Odpovedano dovoljenje: {action} ({value})",
+    "errors.incomplete_escape": "Nepopoln pobeg.",
+    "errors.unclosed_quoted_value": "Neoključena navedenost",
+    "errors.a_nonempty_pattern_is_required": "Potrebna je neprazna vzorec",
+    "errors.quote_the_complete_literal_value": "Citajte popolno dobesedno vrednost",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Uredena končna točka mora biti doslovna vrednost",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Uporabite dve končni točki obsega; citat dobesednega besedila, ki vsebuje črkovnice",
+    "errors.range_start_exceeds_its_end": "Začetek obsega presega svoj konec",
+    "errors.expected_a_string_or": "Pričakovano vrsto ali { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "zadrževanje mora biti 1–3650 dni",
+    "errors.at_most_valid_role_names_are_allowed": "Največ {MAX_DEFAULT_ROLES} veljavnih imen za vloge so dovoljeni",
+    "errors.role_does_not_exist": "vloge {missing} ne obstaja",
+    "errors.user_not_found_named": "Uporabnik {name} se ni našel",
+    "errors.role_not_found_named": "Vloga {name} ni bila ugotovljena",
+    "errors.assignment_attribute_limit": "Navedba podpira do 64 atributov"
   }
 }

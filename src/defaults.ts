@@ -1,3 +1,5 @@
+import { localizedText as resolveMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/auth/i18n/messages.ts";
 import { AdminCommandError } from "@the8020/kernel";
 import { db } from "/p/the8020/db/mod.ts";
 import { z } from "/p/the8020/db/fields.ts";
@@ -39,7 +41,11 @@ export async function setDefaultRoles(roles: readonly string[]) {
   if (!parsed.success) {
     throw new AdminCommandError({
       code: "invalid_arguments",
-      message: `at most ${MAX_DEFAULT_ROLES} valid role names are allowed`,
+      message: await resolveMessage(
+        messageSymbol("errors.at_most_valid_role_names_are_allowed", {
+          MAX_DEFAULT_ROLES: String(MAX_DEFAULT_ROLES),
+        }),
+      ),
     });
   }
   const names = parsed.data.sort();
@@ -54,7 +60,11 @@ export async function setDefaultRoles(roles: readonly string[]) {
   if (missing !== undefined) {
     throw new AdminCommandError({
       code: "not_found",
-      message: `role ${missing} does not exist`,
+      message: await resolveMessage(
+        messageSymbol("errors.role_does_not_exist", {
+          missing: String(missing),
+        }),
+      ),
     });
   }
   const values = {

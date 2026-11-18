@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "失敗的授權檢查",
     "ui.authorization_audit": "授權稽核",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "請輸入允許值（* 允許所有值）或選擇屬性。",
-    "ui.audit_name": "稽核 · {name}"
+    "ui.audit_name": "稽核 · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "角色 {name} 由 {value2} 管理；請複製它以建立自己的版本",
+    "errors.role_already_exists": "{value1} 角色已經存在",
+    "errors.role_already_exists_2": "{target} 角色已經存在",
+    "errors.role_is_not_a_copy_of_a_package_role": "{name} 角色並不是包裝角色的副本",
+    "errors.permission_denied": "拒絕許可: {action} ({value})",
+    "errors.incomplete_escape": "沒有完整的逃跑",
+    "errors.unclosed_quoted_value": "沒有關閉的報價值",
+    "errors.a_nonempty_pattern_is_required": "需要沒有空格的圖案",
+    "errors.quote_the_complete_literal_value": "引用完整的字面值",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "排列的終點必須是字面值",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "使用兩個範圍末點;引用包含字符串文字",
+    "errors.range_start_exceeds_its_end": "距離開始超過其終點",
+    "errors.expected_a_string_or": "預期的字符串或{ comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "保存時間必須為1–3650天",
+    "errors.at_most_valid_role_names_are_allowed": "最多可以使用{MAX_DEFAULT_ROLES}個有效角色名稱",
+    "errors.role_does_not_exist": "沒有{missing}角色",
+    "errors.user_not_found_named": "沒有找到 {name} 用戶",
+    "errors.role_not_found_named": "沒有找到{name}的角色",
+    "errors.assignment_attribute_limit": "一份任務支持最多 64 個属性"
   }
 }

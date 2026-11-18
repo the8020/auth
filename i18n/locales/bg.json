@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Неуспешни проверки на права",
     "ui.authorization_audit": "Одит на правата",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Въведете Допустими стойности (* позволява всяка стойност) или изберете Атрибут.",
-    "ui.audit_name": "Одит · {name}"
+    "ui.audit_name": "Одит · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Ролята {name} се управлява от {value2}; копирайте я, за да направите своя собствена версия",
+    "errors.role_already_exists": "Роля {value1} вече съществува",
+    "errors.role_already_exists_2": "Роля {target} вече съществува",
+    "errors.role_is_not_a_copy_of_a_package_role": "Роля {name} не е копие на пакетната роля",
+    "errors.permission_denied": "Отказ на разрешение: {action} ({value})",
+    "errors.incomplete_escape": "Непълно бягство",
+    "errors.unclosed_quoted_value": "Незаключена котирана стойност",
+    "errors.a_nonempty_pattern_is_required": "Необходимо е да има празен модел.",
+    "errors.quote_the_complete_literal_value": "Цитирайте цялата буквална стойност.",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Определен край трябва да е буквално значение.",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Използвайте две крайни точки на диапазона; цитирайте буквален текст, съдържащ строчки",
+    "errors.range_start_exceeds_its_end": "От началото на диапазона надвишава края си",
+    "errors.expected_a_string_or": "Очаква се въже или { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "съхранение трябва да бъде 1–3650 дни",
+    "errors.at_most_valid_role_names_are_allowed": "най-много {MAX_DEFAULT_ROLES} валидни имена за роли са разрешени",
+    "errors.role_does_not_exist": "роля {missing} не съществува",
+    "errors.user_not_found_named": "Използвател {name} не е намерен",
+    "errors.role_not_found_named": "Роля {name} не е открита",
+    "errors.assignment_attribute_limit": "Задачата поддържа до 64 атрибута"
   }
 }

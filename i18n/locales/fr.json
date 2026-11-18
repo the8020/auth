@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Contrôles d’autorisation échoués",
     "ui.authorization_audit": "Audit des autorisations",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Saisissez des valeurs autorisées (* autorise toute valeur) ou choisissez un attribut.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Le rôle {name} est géré par {value2}; copier pour créer votre propre version",
+    "errors.role_already_exists": "Le rôle {value1} existe déjà",
+    "errors.role_already_exists_2": "Le rôle {target} existe déjà",
+    "errors.role_is_not_a_copy_of_a_package_role": "Le rôle {name} n'est pas une copie d'un rôle d'ensemble",
+    "errors.permission_denied": "Autorisation refusée: {action} ({value})",
+    "errors.incomplete_escape": "Échappe incomplète",
+    "errors.unclosed_quoted_value": "Value cotée non clôturée",
+    "errors.a_nonempty_pattern_is_required": "Un schéma non vide est nécessaire",
+    "errors.quote_the_complete_literal_value": "Citez la valeur littérale complète",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Un point d'arrêt ordonné doit être une valeur littérale",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Utilisez deux extrémités de la plage; citez le texte littéral contenant des hyphens",
+    "errors.range_start_exceeds_its_end": "Le départ de la plage dépasse sa fin",
+    "errors.expected_a_string_or": "Une chaîne ou { comparisons: string } attendue",
+    "errors.retention_must_be_1_3650_days": "la conservation doit être de 1–3650 jours",
+    "errors.at_most_valid_role_names_are_allowed": "au plus {MAX_DEFAULT_ROLES} noms de rôles valides sont autorisés",
+    "errors.role_does_not_exist": "rôle {missing} n'existe pas",
+    "errors.user_not_found_named": "Utilisateur {name} n' a pas été trouvé",
+    "errors.role_not_found_named": "Rôle {name} n'a pas été trouvé",
+    "errors.assignment_attribute_limit": "Une tâche prend en charge jusqu'à 64 attributs"
   }
 }

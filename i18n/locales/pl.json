@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Odmowy dostępu",
     "ui.authorization_audit": "Audyt autoryzacji",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Wprowadź Dozwolone wartości (* zezwala na każdą wartość) lub wybierz Atrybut.",
-    "ui.audit_name": "Audyt · {name}"
+    "ui.audit_name": "Audyt · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Rola {name} jest zarządzana przez {value2}; skopiować ją, aby stworzyć własną wersję",
+    "errors.role_already_exists": "Rola {value1} istnieje już",
+    "errors.role_already_exists_2": "Rola {target} istnieje już",
+    "errors.role_is_not_a_copy_of_a_package_role": "Rola {name} nie jest kopią roli pakietowej",
+    "errors.permission_denied": "Odmowa zezwolenia: {action} ({value})",
+    "errors.incomplete_escape": "Niepełne ucieczki",
+    "errors.unclosed_quoted_value": "Nieokreślona wartość notowana",
+    "errors.a_nonempty_pattern_is_required": "Potrzebny jest wzór nieprzerwany",
+    "errors.quote_the_complete_literal_value": "Powtórz pełną wartość dosłowną",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Zorganizowany punkt końcowy musi być wartością dosłowną",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Wykorzystaj dwa punkty końcowe; cytuj dosłowny tekst zawierający podszywkę",
+    "errors.range_start_exceeds_its_end": "Początek odległości przekracza jego koniec",
+    "errors.expected_a_string_or": "Oczekiwane ciągi lub { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "przechowywanie musi wynosić 1–3650 dni",
+    "errors.at_most_valid_role_names_are_allowed": "Najwyżej {MAX_DEFAULT_ROLES} ważne nazwy rolne są dozwolone",
+    "errors.role_does_not_exist": "rola {missing} nie istnieje",
+    "errors.user_not_found_named": "Użytkownik {name} nie znaleziono",
+    "errors.role_not_found_named": "Nie znaleziono roli {name}",
+    "errors.assignment_attribute_limit": "Zadanie obsługuje do 64 atrybutów"
   }
 }

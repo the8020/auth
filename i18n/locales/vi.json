@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Kiểm tra quyền thất bại",
     "ui.authorization_audit": "Kiểm toán quyền",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Nhập giá trị được phép (* cho phép mọi giá trị) hoặc chọn một thuộc tính.",
-    "ui.audit_name": "Kiểm toán · {name}"
+    "ui.audit_name": "Kiểm toán · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Vai trò {name} được quản lý bởi {value2}; sao chép nó để tạo phiên bản của riêng bạn",
+    "errors.role_already_exists": "Vai trò {value1} đã tồn tại",
+    "errors.role_already_exists_2": "Vai trò {target} đã tồn tại",
+    "errors.role_is_not_a_copy_of_a_package_role": "Phụ thể {name} không phải là bản sao của một vai trò gói",
+    "errors.permission_denied": "Việc từ chối giấy phép: {action} ({value})",
+    "errors.incomplete_escape": "Không hoàn thành.",
+    "errors.unclosed_quoted_value": "Giá trị ghi danh không đóng",
+    "errors.a_nonempty_pattern_is_required": "Một mô hình không trống là cần thiết",
+    "errors.quote_the_complete_literal_value": "Hãy trích dẫn giá trị theo nghĩa đen đầy đủ",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Một điểm cuối được sắp xếp phải là một giá trị theo nghĩa đen",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Sử dụng hai điểm kết thúc phạm vi; trích dẫn văn bản theo nghĩa đen có chứa dấu phẩy",
+    "errors.range_start_exceeds_its_end": "Start range vượt quá kết thúc",
+    "errors.expected_a_string_or": "Dự kiến một chuỗi hoặc { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "lưu giữ phải là 1–3650 ngày",
+    "errors.at_most_valid_role_names_are_allowed": "tối đa {MAX_DEFAULT_ROLES} tên vai hợp lệ được phép",
+    "errors.role_does_not_exist": "vai trò {missing} không tồn tại",
+    "errors.user_not_found_named": "Người dùng {name} không được tìm thấy",
+    "errors.role_not_found_named": "Không tìm thấy vai trò {name}",
+    "errors.assignment_attribute_limit": "Một nhiệm vụ hỗ trợ lên đến 64 thuộc tính"
   }
 }

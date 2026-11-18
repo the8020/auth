@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Failed authorization checks",
     "ui.authorization_audit": "Authorization audit",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Enter Allowed values (* allows every value) or choose an Attribute.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Role {name} is managed by {value2}; copy it to make your own version",
+    "errors.role_already_exists": "Role {value1} already exists",
+    "errors.role_already_exists_2": "Role {target} already exists",
+    "errors.role_is_not_a_copy_of_a_package_role": "Role {name} is not a copy of a package role",
+    "errors.permission_denied": "Permission denied: {action} ({value})",
+    "errors.incomplete_escape": "Incomplete escape",
+    "errors.unclosed_quoted_value": "Unclosed quoted value",
+    "errors.a_nonempty_pattern_is_required": "A nonempty pattern is required",
+    "errors.quote_the_complete_literal_value": "Quote the complete literal value",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "An ordered endpoint must be a literal value",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Use two range endpoints; quote literal text containing hyphens",
+    "errors.range_start_exceeds_its_end": "Range start exceeds its end",
+    "errors.expected_a_string_or": "Expected a string or { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "retention must be 1–3650 days",
+    "errors.at_most_valid_role_names_are_allowed": "at most {MAX_DEFAULT_ROLES} valid role names are allowed",
+    "errors.role_does_not_exist": "role {missing} does not exist",
+    "errors.user_not_found_named": "User {name} was not found",
+    "errors.role_not_found_named": "Role {name} was not found",
+    "errors.assignment_attribute_limit": "An assignment supports up to 64 attributes"
   }
 }

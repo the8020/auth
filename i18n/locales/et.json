@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Ebaõnnestunud õiguskontrollid",
     "ui.authorization_audit": "Õiguste audit",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Sisesta Lubatud väärtused (* lubab kõik väärtused) või vali Atribuut.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Rooli {name} haldab {value2}; kopeeri seda, et teha oma versioon",
+    "errors.role_already_exists": "Rool {value1} on juba olemas",
+    "errors.role_already_exists_2": "Rool {target} on juba olemas",
+    "errors.role_is_not_a_copy_of_a_package_role": "Rool {name} ei ole koopia pakendi roolist",
+    "errors.permission_denied": "Lõigest keeldus: {action} ({value})",
+    "errors.incomplete_escape": "Täietav põgenemine",
+    "errors.unclosed_quoted_value": "Ühtlustamata kotireeritud väärtus",
+    "errors.a_nonempty_pattern_is_required": "Vajalik ei ole tühja muster",
+    "errors.quote_the_complete_literal_value": "Citeerige täielikku kirjalikku väärtust",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Järjestunud lõpppunkt peab olema kirjalik väärtus",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Kasuta kaks vahemiku lõpppunkti; tsiteerige kirjalikke tekste, mis sisaldavad liigneid",
+    "errors.range_start_exceeds_its_end": "Vahe algus ületab lõppu",
+    "errors.expected_a_string_or": "Ootatud string või { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "säilitamine peab olema 1–3650 päeva",
+    "errors.at_most_valid_role_names_are_allowed": "maksimaalselt {MAX_DEFAULT_ROLES} kehtiv rolli nimed on lubatud",
+    "errors.role_does_not_exist": "roll {missing} ei ole olemas",
+    "errors.user_not_found_named": "Kasutaja {name} ei leitud",
+    "errors.role_not_found_named": "Rool {name} ei leitud",
+    "errors.assignment_attribute_limit": "Ühe ülesande puhul toetab kuni 64 attribüti"
   }
 }

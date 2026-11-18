@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Sikertelen jogosultság-ellenőrzések",
     "ui.authorization_audit": "Jogosultsági audit",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Adja meg az Engedélyezett értékeket (* minden értéket engedélyez), vagy válasszon Attribútumot.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "A {name} szerepet a {value2} irányítja; másolja ki, hogy saját verzióját készítsen.",
+    "errors.role_already_exists": "A {value1} szerepe már létezik",
+    "errors.role_already_exists_2": "A {target} szerepe már létezik",
+    "errors.role_is_not_a_copy_of_a_package_role": "A {name}-es szerepe nem a csomagolási szerepe másolata",
+    "errors.permission_denied": "Megtagadott engedély: {action} ({value})",
+    "errors.incomplete_escape": "Tökéletlen menekülés.",
+    "errors.unclosed_quoted_value": "Nem zárott jegyzett érték",
+    "errors.a_nonempty_pattern_is_required": "Szükség van egy nem üres mintára",
+    "errors.quote_the_complete_literal_value": "Írd meg a teljes szó szerinti értéket.",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "A rendelt végpontnak szó szerint kell lennie",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Használj két tartomány végpontot; idézz szó szerinti szöveget, amely a kötéleket tartalmazza",
+    "errors.range_start_exceeds_its_end": "A távolság kezdete meghaladja a végét",
+    "errors.expected_a_string_or": "Várható szálak vagy { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "a tartaléktartás 1–3650 nap",
+    "errors.at_most_valid_role_names_are_allowed": "legfeljebb {MAX_DEFAULT_ROLES} érvényes szerepnév engedélyezett",
+    "errors.role_does_not_exist": "{missing} szerepe nem létezik",
+    "errors.user_not_found_named": "{name} felhasználó nem talált",
+    "errors.role_not_found_named": "{name} szerepet nem találtak",
+    "errors.assignment_attribute_limit": "A feladat 64 attribútumot támogat"
   }
 }

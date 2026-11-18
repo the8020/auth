@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "失敗した認可チェック",
     "ui.authorization_audit": "認可監査",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "許可する値（* はすべての値を許可）を入力するか、属性を選択してください。",
-    "ui.audit_name": "監査 · {name}"
+    "ui.audit_name": "監査 · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "ロール{name} は {value2} によって管理されます.",
+    "errors.role_already_exists": "{value1}の役割は既に存在している",
+    "errors.role_already_exists_2": "{target}の役割は既に存在している",
+    "errors.role_is_not_a_copy_of_a_package_role": "{name}の役割はパッケージの役割のコピーではありません",
+    "errors.permission_denied": "許可拒否: {action} ({value})",
+    "errors.incomplete_escape": "逃亡が完了しない",
+    "errors.unclosed_quoted_value": "封じないコットされた値",
+    "errors.a_nonempty_pattern_is_required": "空っぽのパターンが必要",
+    "errors.quote_the_complete_literal_value": "完全な文字値を引用する",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "順序付けされたエンドポイントは文字通り値である必要があります",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "2 つの範囲エンドポイントを使用します. 字面文字文字がハイフンを含む文を引用します",
+    "errors.range_start_exceeds_its_end": "範囲開始が終了を上回る",
+    "errors.expected_a_string_or": "予想された文字列または{ comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "保存期間は1–3650日",
+    "errors.at_most_valid_role_names_are_allowed": "最大 {MAX_DEFAULT_ROLES} の有効なロールネームが許可されています",
+    "errors.role_does_not_exist": "役割{missing}は存在しない",
+    "errors.user_not_found_named": "ユーザー {name} は見つかりませんでした",
+    "errors.role_not_found_named": "{name} の役割が見つかりませんでした",
+    "errors.assignment_attribute_limit": "割り当ては最大64の属性をサポートします"
   }
 }

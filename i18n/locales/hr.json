@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Neuspjele autorizacijske provjere",
     "ui.authorization_audit": "Autorizacijska revizija",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Unesite Dopuštene vrijednosti (* dopušta svaku vrijednost) ili odaberite Atribut.",
-    "ui.audit_name": "Revizija · {name}"
+    "ui.audit_name": "Revizija · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Uloga {name} upravlja {value2}; kopirajte je kako biste napravili vlastitu verziju",
+    "errors.role_already_exists": "Uloga {value1} već postoji",
+    "errors.role_already_exists_2": "Uloga {target} već postoji",
+    "errors.role_is_not_a_copy_of_a_package_role": "Uloga {name} nije kopija paketne uloge",
+    "errors.permission_denied": "Odbijanje dozvole: {action} ({value})",
+    "errors.incomplete_escape": "Nepotpuni bijeg",
+    "errors.unclosed_quoted_value": "Neotkrivena navodna vrijednost",
+    "errors.a_nonempty_pattern_is_required": "Potrebno je prazno obrazac",
+    "errors.quote_the_complete_literal_value": "Citacija potpune doslovne vrijednosti",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Uredena krajnja tačka mora biti doslovna vrijednost",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Koristite dvije krajnje točke razine; citirati doslovni tekst koji sadrži čvorove",
+    "errors.range_start_exceeds_its_end": "Početak raspona premašuje kraj",
+    "errors.expected_a_string_or": "Očekuje se niz ili { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "zadržavanje mora biti 1–3650 dana",
+    "errors.at_most_valid_role_names_are_allowed": "Najviše {MAX_DEFAULT_ROLES} valjani imena uloge dozvoljena su",
+    "errors.role_does_not_exist": "Uloga {missing} ne postoji",
+    "errors.user_not_found_named": "Korisnik {name} nije pronađen",
+    "errors.role_not_found_named": "Uloga {name} nije pronađena",
+    "errors.assignment_attribute_limit": "Upotreba podržava do 64 atributa"
   }
 }

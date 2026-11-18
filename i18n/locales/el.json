@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Αποτυχημένοι έλεγχοι εξουσιοδότησης",
     "ui.authorization_audit": "Ιστορικό ελέγχων εξουσιοδότησης",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Εισαγάγετε Επιτρεπόμενες τιμές (* για κάθε τιμή) ή επιλέξτε Γνώρισμα.",
-    "ui.audit_name": "Ιστορικό ελέγχων · {name}"
+    "ui.audit_name": "Ιστορικό ελέγχων · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Ο ρόλος {name} διαχειρίζεται το {value2}; αντιγράψτε τον για να δημιουργήσετε τη δική σας έκδοση",
+    "errors.role_already_exists": "Ο ρόλος {value1} υπάρχει ήδη",
+    "errors.role_already_exists_2": "Ο ρόλος {target} υπάρχει ήδη",
+    "errors.role_is_not_a_copy_of_a_package_role": "Ο ρόλος {name} δεν αποτελεί αντίγραφο ενός ρόλου πακέτου",
+    "errors.permission_denied": "Αρνηθεί η άδεια: {action} ({value})",
+    "errors.incomplete_escape": "Ατελείωτη διαφυγή",
+    "errors.unclosed_quoted_value": "Ακλεισμένη αξία που αναφέρεται",
+    "errors.a_nonempty_pattern_is_required": "Απαιτείται μη κενό σχέδιο",
+    "errors.quote_the_complete_literal_value": "Παραθέτω την πλήρη κυριολεκτική αξία",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Ένας διαταγμένος τελικός πίνακας πρέπει να είναι κυριολεκτική τιμή",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Χρησιμοποιήστε δύο τελικά σημεία εύρους. Παραθέστε κυριολεκτικό κείμενο που περιέχει συνδυασμούς",
+    "errors.range_start_exceeds_its_end": "Η εκκίνηση από την περιοχή υπερβαίνει το τέλος της",
+    "errors.expected_a_string_or": "Αναμενόμενη αλυσίδα ή { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "διατήρηση πρέπει να είναι 1–3650 ημέρες",
+    "errors.at_most_valid_role_names_are_allowed": "Επιτρέπονται τουλάχιστον {MAX_DEFAULT_ROLES} έγκυρες ονομασίες ρόλων",
+    "errors.role_does_not_exist": "ρόλος {missing} δεν υπάρχει",
+    "errors.user_not_found_named": "Χρήστης {name} δεν βρέθηκε",
+    "errors.role_not_found_named": "Δεν βρέθηκε ρόλος {name}",
+    "errors.assignment_attribute_limit": "Μια αποστολή υποστηρίζει έως και 64 χαρακτηριστικά"
   }
 }

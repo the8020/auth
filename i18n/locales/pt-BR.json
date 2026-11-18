@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Verificações de autorização recusadas",
     "ui.authorization_audit": "Auditoria de autorização",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Insira Valores permitidos (* permite qualquer valor) ou escolha um Atributo.",
-    "ui.audit_name": "Auditoria · {name}"
+    "ui.audit_name": "Auditoria · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "O papel {name} é administrado por {value2}; copie-o para fazer a sua própria versão",
+    "errors.role_already_exists": "O papel {value1} já existe",
+    "errors.role_already_exists_2": "O papel {target} já existe",
+    "errors.role_is_not_a_copy_of_a_package_role": "O papel {name} não é uma cópia de um papel de pacote",
+    "errors.permission_denied": "Permissão recusada: {action} ({value})",
+    "errors.incomplete_escape": "Escapa incompleta",
+    "errors.unclosed_quoted_value": "Valor cotado não fechado",
+    "errors.a_nonempty_pattern_is_required": "É necessário um padrão não vazio",
+    "errors.quote_the_complete_literal_value": "Cita o valor literal completo",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Um ponto final ordenado deve ser um valor literal",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Usar dois pontos finais de intervalo; citar texto literal contendo hífens",
+    "errors.range_start_exceeds_its_end": "O início da faixa excede o fim",
+    "errors.expected_a_string_or": "Espera-se uma cadeia ou { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "A retenção deve ser de 1–3650 dias.",
+    "errors.at_most_valid_role_names_are_allowed": "são permitidos no máximo {MAX_DEFAULT_ROLES} nomes de funções válidos",
+    "errors.role_does_not_exist": "Não existe o papel {missing}",
+    "errors.user_not_found_named": "Usuário {name} não foi encontrado",
+    "errors.role_not_found_named": "Não foi encontrado o papel {name}",
+    "errors.assignment_attribute_limit": "Uma tarefa suporta até 64 atributos"
   }
 }
