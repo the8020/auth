@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Verificări de autorizare refuzate",
     "ui.authorization_audit": "Audit de autorizare",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Introduceți Valori permise (* permite orice valoare) sau alegeți un Atribut.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Rolul {name} este gestionat de {value2}; copiaza-l pentru a face propria versiune",
+    "errors.role_already_exists": "Rolul {value1} există deja",
+    "errors.role_already_exists_2": "Rolul {target} există deja",
+    "errors.role_is_not_a_copy_of_a_package_role": "Rolul {name} nu este o copie a unui rol de pachet",
+    "errors.permission_denied": "Refuzarea autorizației: {action} ({value})",
+    "errors.incomplete_escape": "Evadare incompletă",
+    "errors.unclosed_quoted_value": "Valoarea cotată neînclinsă",
+    "errors.a_nonempty_pattern_is_required": "Este necesar un model non-golit",
+    "errors.quote_the_complete_literal_value": "Citaţi valoarea literală completă",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Un punct final ordonat trebuie să fie o valoare literală",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Foloseste doua puncte de incheiere ale intervalei; citeaza text literal care contine linii interlineare",
+    "errors.range_start_exceeds_its_end": "Începutul intervalului depășește sfârșitul",
+    "errors.expected_a_string_or": "Se aşteaptă o cârligă sau { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "păstrarea trebuie să fie de 1–3650 de zile",
+    "errors.at_most_valid_role_names_are_allowed": "sunt permise cel mult {MAX_DEFAULT_ROLES} nume de rol valabile",
+    "errors.role_does_not_exist": "Rolul {missing} nu există",
+    "errors.user_not_found_named": "Utilizator {name} nu a fost găsit",
+    "errors.role_not_found_named": "Rolul {name} nu a fost găsit",
+    "errors.assignment_attribute_limit": "O atribuire suportă până la 64 de atribute"
   }
 }

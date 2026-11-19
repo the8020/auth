@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Avviste autorisasjonskontroller",
     "ui.authorization_audit": "Autorisasjonsrevisjon",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Angi Tillatte verdier (* tillater alle verdier), eller velg et Attributt.",
-    "ui.audit_name": "Revisjon · {name}"
+    "ui.audit_name": "Revisjon · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Roll {name} administreres av {value2}; kopier den for å lage din egen versjon",
+    "errors.role_already_exists": "Rolle {value1} eksisterer allerede",
+    "errors.role_already_exists_2": "Rolle {target} eksisterer allerede",
+    "errors.role_is_not_a_copy_of_a_package_role": "Rolle {name} er ikke en kopi av en pakkerolle",
+    "errors.permission_denied": "Tillatelse nektet: {action} ({value})",
+    "errors.incomplete_escape": "Ufullstendig flyktning",
+    "errors.unclosed_quoted_value": "Uklukkede noterte verdier",
+    "errors.a_nonempty_pattern_is_required": "Det kreves ikke tomt mønster.",
+    "errors.quote_the_complete_literal_value": "Citere den totale bokstavelige verdien",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Et ordnet sluttpunkt må være en bokstavelig verdi",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Bruk to endpoints; citere bokstavelig tekst som inneholder bindinger",
+    "errors.range_start_exceeds_its_end": "Start av rekkevidde overstiger slutten",
+    "errors.expected_a_string_or": "Forventet streng eller { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "oppbevaring må være 1–3650 dager",
+    "errors.at_most_valid_role_names_are_allowed": "maksimalt {MAX_DEFAULT_ROLES} gyldige rollnavn er tillatt",
+    "errors.role_does_not_exist": "rolle {missing} eksisterer ikke",
+    "errors.user_not_found_named": "Bruker {name} ble ikke funnet",
+    "errors.role_not_found_named": "Rolle {name} ble ikke funnet",
+    "errors.assignment_attribute_limit": "En oppgave støtter opptil 64 egenskaper"
   }
 }

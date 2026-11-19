@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Semakan keizinan gagal",
     "ui.authorization_audit": "Audit keizinan",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Masukkan Nilai dibenarkan (* membenarkan semua nilai) atau pilih Atribut.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Peranan {name} dikendalikan oleh {value2}; salin untuk membuat versi anda sendiri",
+    "errors.role_already_exists": "Peranan {value1} sudah wujud",
+    "errors.role_already_exists_2": "Peranan {target} sudah wujud",
+    "errors.role_is_not_a_copy_of_a_package_role": "Peranan {name} bukan salinan peranan pakej",
+    "errors.permission_denied": "Permohonan ditolak: {action} ({value})",
+    "errors.incomplete_escape": "Perlu melarikan diri.",
+    "errors.unclosed_quoted_value": "Nilai dikutip yang tidak ditutup",
+    "errors.a_nonempty_pattern_is_required": "Satu corak tidak kosong diperlukan",
+    "errors.quote_the_complete_literal_value": "Mengutip nilai literal lengkap",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Titik akhir yang diatur mestilah nilai literal",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Gunakan dua titik akhir julat; sebut teks literal yang mengandungi tanda tanda",
+    "errors.range_start_exceeds_its_end": "Permulaan jarak melebihi hujungnya",
+    "errors.expected_a_string_or": "Tunggu string atau { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "Penyimpanan mestilah 1–3650 hari",
+    "errors.at_most_valid_role_names_are_allowed": "tidak lebih daripada {MAX_DEFAULT_ROLES} nama peranan yang sah dibenarkan",
+    "errors.role_does_not_exist": "peranan {missing} tidak wujud",
+    "errors.user_not_found_named": "Pengguna {name} tidak ditemui",
+    "errors.role_not_found_named": "Peranan {name} tidak ditemui",
+    "errors.assignment_attribute_limit": "Satu tugasan menyokong sehingga 64 atribut"
   }
 }

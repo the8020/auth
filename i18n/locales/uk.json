@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Неуспішні перевірки авторизації",
     "ui.authorization_audit": "Аудит авторизації",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Введіть дозволені значення (* дозволяє будь-яке значення) або виберіть атрибут.",
-    "ui.audit_name": "Аудит · {name}"
+    "ui.audit_name": "Аудит · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Роль {name} управляється {value2}; скопіюйте її, щоб зробити власну версію",
+    "errors.role_already_exists": "Роль {value1} вже існує",
+    "errors.role_already_exists_2": "Роль {target} вже існує",
+    "errors.role_is_not_a_copy_of_a_package_role": "Роль {name} не є копією пакетної ролі",
+    "errors.permission_denied": "Відмову від дозволу: {action} ({value})",
+    "errors.incomplete_escape": "Неповніх збег",
+    "errors.unclosed_quoted_value": "Незакрита коцірована вартість",
+    "errors.a_nonempty_pattern_is_required": "Потрібна непуста схема",
+    "errors.quote_the_complete_literal_value": "Цитируйте повну буквальну вартість",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Порівняна кінцева точка повинна бути буквальним значенням",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Використовуйте дві кінцеві точки діапазону; цитируйте буквальний текст, що містить гіфни",
+    "errors.range_start_exceeds_its_end": "Починаючи з діапазону перевищує кінець",
+    "errors.expected_a_string_or": "Очікувана струна або { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "зберігання повинно тривати 1–3650 днів",
+    "errors.at_most_valid_role_names_are_allowed": "не більше {MAX_DEFAULT_ROLES} дійсних ролевих ім'янок допускаються",
+    "errors.role_does_not_exist": "роль {missing} не існує",
+    "errors.user_not_found_named": "Користувач {name} не знайдено",
+    "errors.role_not_found_named": "Роль {name} не знайдена",
+    "errors.assignment_attribute_limit": "Надання підтримує до 64 атрибутів"
   }
 }

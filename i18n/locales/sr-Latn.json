@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Neuspešne provere autorizacije",
     "ui.authorization_audit": "Revizija autorizacije",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Unesi dozvoljene vrednosti (* dozvoljava svaku vrednost) ili izaberi atribut.",
-    "ui.audit_name": "Revizija · {name}"
+    "ui.audit_name": "Revizija · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Rol {name} upravlja {value2}; kopirajte ga kako biste napravili sopstvenu verziju",
+    "errors.role_already_exists": "Rola {value1} već postoji",
+    "errors.role_already_exists_2": "Rola {target} već postoji",
+    "errors.role_is_not_a_copy_of_a_package_role": "Uloga {name} nije kopija paketa uloga",
+    "errors.permission_denied": "Odbijanje dozvole: {action} ({value})",
+    "errors.incomplete_escape": "Nepovršeno pobeg",
+    "errors.unclosed_quoted_value": "Nesključena kotirana vrednost",
+    "errors.a_nonempty_pattern_is_required": "Potreban je model koji nije prazan",
+    "errors.quote_the_complete_literal_value": "Citirajte potpunu bukvalnu vrednost",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Uredna krajnja točka mora biti bukvalna vrednost",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Koristite dve krajnje tačke opsega; citirajte bukvalni tekst koji sadrži premetke",
+    "errors.range_start_exceeds_its_end": "Počinak opsega prelazi kraj",
+    "errors.expected_a_string_or": "Očekivano struje ili { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "zadržavanje mora biti 1–3650 dana",
+    "errors.at_most_valid_role_names_are_allowed": "Dozvoljeno je najviše {MAX_DEFAULT_ROLES} važećih imena uloga",
+    "errors.role_does_not_exist": "uloga {missing} ne postoji",
+    "errors.user_not_found_named": "Korisnik {name} nije pronađen",
+    "errors.role_not_found_named": "Rola {name} nije pronađena",
+    "errors.assignment_attribute_limit": "Nadaj podržava do 64 atributa"
   }
 }

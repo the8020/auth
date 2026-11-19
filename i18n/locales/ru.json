@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Неуспешные проверки авторизации",
     "ui.authorization_audit": "Аудит авторизации",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Введите разрешённые значения (* разрешает любое значение) или выберите атрибут.",
-    "ui.audit_name": "Аудит · {name}"
+    "ui.audit_name": "Аудит · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Роль {name} управляется {value2}; копируйте ее, чтобы сделать свой собственный вариант",
+    "errors.role_already_exists": "Роль {value1} уже существует",
+    "errors.role_already_exists_2": "Роль {target} уже существует",
+    "errors.role_is_not_a_copy_of_a_package_role": "Роль {name} не является копией пакетной роли",
+    "errors.permission_denied": "Отказ в разрешении: {action} ({value})",
+    "errors.incomplete_escape": "Неполная побега",
+    "errors.unclosed_quoted_value": "Незакрытая котируемая стоимость",
+    "errors.a_nonempty_pattern_is_required": "Не требуется пустое образец",
+    "errors.quote_the_complete_literal_value": "Цитируйте полное буквальное значение",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Упорядоченный конечный пункт должен быть буквальным значением",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Используйте две конечные точки диапазона; цитируйте буквальный текст , содержащий строки",
+    "errors.range_start_exceeds_its_end": "Начало диапазона превышает его конец",
+    "errors.expected_a_string_or": "Ожидается строка или { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "хранение должно составлять 1–3650 дней",
+    "errors.at_most_valid_role_names_are_allowed": "Допускаются не более {MAX_DEFAULT_ROLES} действительных ролевых имен",
+    "errors.role_does_not_exist": "роль {missing} не существует",
+    "errors.user_not_found_named": "Пользователь {name} не найден",
+    "errors.role_not_found_named": "Роль {name} не найдена",
+    "errors.assignment_attribute_limit": "Задача поддерживает до 64 атрибутов"
   }
 }

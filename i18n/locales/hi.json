@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "विफल प्राधिकरण जाँच",
     "ui.authorization_audit": "प्राधिकरण ऑडिट",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "अनुमत मान दर्ज करें (* सभी मानों की अनुमति देता है) या एट्रिब्यूट चुनें।",
-    "ui.audit_name": "ऑडिट · {name}"
+    "ui.audit_name": "ऑडिट · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "भूमिका {name} को {value2} द्वारा प्रबंधित किया जाता है; इसे अपना स्वयं का संस्करण बनाने के लिए कॉपी करें",
+    "errors.role_already_exists": "भूमिका {value1} पहले से ही मौजूद है",
+    "errors.role_already_exists_2": "भूमिका {target} पहले से ही मौजूद है",
+    "errors.role_is_not_a_copy_of_a_package_role": "भूमिका {name} एक पैकेज भूमिका की प्रति नहीं है",
+    "errors.permission_denied": "अनुमति से इनकार किया गयाः {action} ({value})",
+    "errors.incomplete_escape": "अपूर्ण पलायन",
+    "errors.unclosed_quoted_value": "अनलॉक किए गए उद्धृत मूल्य",
+    "errors.a_nonempty_pattern_is_required": "एक गैर-खाली पैटर्न की आवश्यकता है",
+    "errors.quote_the_complete_literal_value": "पूर्ण शाब्दिक मूल्य उद्धृत करें",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "एक क्रमबद्ध अंत बिंदु एक शाब्दिक मूल्य होना चाहिए",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "दो सीमा अंत बिंदुओं का उपयोग करें; हाइफन युक्त शाब्दिक पाठ का उद्धरण करें",
+    "errors.range_start_exceeds_its_end": "रेंज शुरू अपने अंत से अधिक है",
+    "errors.expected_a_string_or": "अपेक्षित स्ट्रिंग या { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "रखरखाव 1–3650 दिन होना चाहिए",
+    "errors.at_most_valid_role_names_are_allowed": "अधिकतम {MAX_DEFAULT_ROLES} वैध भूमिका नामों की अनुमति है",
+    "errors.role_does_not_exist": "भूमिका {missing} मौजूद नहीं है",
+    "errors.user_not_found_named": "उपयोगकर्ता {name} नहीं मिला",
+    "errors.role_not_found_named": "भूमिका {name} नहीं मिली",
+    "errors.assignment_attribute_limit": "एक असाइनमेंट 64 गुणों तक का समर्थन करता है"
   }
 }

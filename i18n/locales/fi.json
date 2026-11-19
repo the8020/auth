@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Epäonnistuneet käyttöoikeustarkistukset",
     "ui.authorization_audit": "Käyttöoikeustarkastusloki",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Anna Sallitut arvot (* sallii kaikki arvot) tai valitse Attribuutti.",
-    "ui.audit_name": "Tarkastusloki · {name}"
+    "ui.audit_name": "Tarkastusloki · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Rooli {name} hallinnoidaan {value2}; kopioida se omaksi versioksi",
+    "errors.role_already_exists": "Rooli {value1} on jo olemassa",
+    "errors.role_already_exists_2": "Rooli {target} on jo olemassa",
+    "errors.role_is_not_a_copy_of_a_package_role": "Rooli {name} ei ole jäljennös pakettiroolista",
+    "errors.permission_denied": "Lupa ei myönnetty: {action} ({value})",
+    "errors.incomplete_escape": "Täydettömän pakoon.",
+    "errors.unclosed_quoted_value": "Kiinnitettyä arvopapereita",
+    "errors.a_nonempty_pattern_is_required": "Täytyy olla tyhjä",
+    "errors.quote_the_complete_literal_value": "Valitse täysi kirjaimellinen arvo",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Järjestetyn päämäärän on oltava kirjaimellinen arvo",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Käytä kahta rajan loppupisteä; lainaa kirjaimellista tekstiä , joka sisältää lippuja",
+    "errors.range_start_exceeds_its_end": "Jäljellä oleva startti ylittää sen lopun",
+    "errors.expected_a_string_or": "Odotettu johto tai { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "säilytys on oltava 1–3650 päivää",
+    "errors.at_most_valid_role_names_are_allowed": "sallittua on enintään {MAX_DEFAULT_ROLES} voimassa olevaa rooli nimeä",
+    "errors.role_does_not_exist": "rooli {missing} ei ole olemassa",
+    "errors.user_not_found_named": "Käyttäjä {name} ei löytynyt",
+    "errors.role_not_found_named": "Rooli {name} ei löytynyt",
+    "errors.assignment_attribute_limit": "Toiminta tukee jopa 64 ominaisuutta"
   }
 }

@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Comprobaciones de autorización fallidas",
     "ui.authorization_audit": "Auditoría de autorización",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Introduzca Valores permitidos (* permite todos los valores) o elija un Atributo.",
-    "ui.audit_name": "Auditoría · {name}"
+    "ui.audit_name": "Auditoría · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "El papel {name} es administrado por {value2}; copia para hacer su propia versión",
+    "errors.role_already_exists": "El papel {value1} ya existe",
+    "errors.role_already_exists_2": "El papel {target} ya existe",
+    "errors.role_is_not_a_copy_of_a_package_role": "El papel {name} no es una copia de un papel de paquete",
+    "errors.permission_denied": "Rechazo de permiso: {action} ({value})",
+    "errors.incomplete_escape": "Escapa incompleta",
+    "errors.unclosed_quoted_value": "Valor cotizado no cerrado",
+    "errors.a_nonempty_pattern_is_required": "Se requiere un patrón sin nada",
+    "errors.quote_the_complete_literal_value": "Cita el valor literal completo",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Un punto final ordenado debe ser un valor literal",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Utilice dos puntos finales del rango; cita texto literal que contiene hifas",
+    "errors.range_start_exceeds_its_end": "El inicio del rango excede su final",
+    "errors.expected_a_string_or": "Se espera una cadena o { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "La retención debe ser de 1–3650 días.",
+    "errors.at_most_valid_role_names_are_allowed": "No más de {MAX_DEFAULT_ROLES} nombres de rol válidos están permitidos",
+    "errors.role_does_not_exist": "no existe el papel {missing}",
+    "errors.user_not_found_named": "Usuario {name} no se encontró",
+    "errors.role_not_found_named": "No se encontró el papel {name}",
+    "errors.assignment_attribute_limit": "Una asignación admite hasta 64 atributos"
   }
 }

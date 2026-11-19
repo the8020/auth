@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "실패한 권한 검사",
     "ui.authorization_audit": "권한 감사",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "허용 값(*는 모든 값 허용)을 입력하거나 속성을 선택하세요.",
-    "ui.audit_name": "감사 · {name}"
+    "ui.audit_name": "감사 · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "{name} 역할은 {value2}에 의해 관리됩니다.",
+    "errors.role_already_exists": "{value1} 역할은 이미 존재합니다",
+    "errors.role_already_exists_2": "{target} 역할은 이미 존재합니다",
+    "errors.role_is_not_a_copy_of_a_package_role": "{name} 역할은 패키지 역할의 복사본이 아닙니다",
+    "errors.permission_denied": "허가 거부: {action} ({value})",
+    "errors.incomplete_escape": "미완성 탈출",
+    "errors.unclosed_quoted_value": "닫혀 있지 않은 코티드 값",
+    "errors.a_nonempty_pattern_is_required": "비공개 패턴이 필요합니다.",
+    "errors.quote_the_complete_literal_value": "전체 문자값을 인용",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "정렬된 최종점은 문자값이어야 합니다.",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "두 개의 범위 끝점을 사용하십시오.",
+    "errors.range_start_exceeds_its_end": "범위 시작은 그 끝을 초과한다",
+    "errors.expected_a_string_or": "예상된 문자열 또는 { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "보관 기간은 1–3650일 이어야 합니다",
+    "errors.at_most_valid_role_names_are_allowed": "최대 {MAX_DEFAULT_ROLES} 유효한 역할 이름이 허용됩니다",
+    "errors.role_does_not_exist": "역할 {missing}는 존재하지 않습니다",
+    "errors.user_not_found_named": "사용자 {name}은 발견되지 않았다",
+    "errors.role_not_found_named": "{name} 역할은 발견되지 않았다",
+    "errors.assignment_attribute_limit": "임무는 최대 64개의 속성을 지원합니다"
   }
 }

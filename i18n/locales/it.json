@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Verifiche di autorizzazione non riuscite",
     "ui.authorization_audit": "Audit delle autorizzazioni",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Inserisci Valori consentiti (* consente ogni valore) oppure scegli un Attributo.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Il ruolo {name} è gestito da {value2}; copia per creare la tua versione",
+    "errors.role_already_exists": "Il ruolo {value1} esiste già",
+    "errors.role_already_exists_2": "Il ruolo {target} esiste già",
+    "errors.role_is_not_a_copy_of_a_package_role": "Il ruolo {name} non è una copia di un ruolo di pacchetto",
+    "errors.permission_denied": "Rifiuto di autorizzazione: {action} ({value})",
+    "errors.incomplete_escape": "Fuga incompleta",
+    "errors.unclosed_quoted_value": "Valore quotato non chiuso",
+    "errors.a_nonempty_pattern_is_required": "È necessario un modello non vuoto",
+    "errors.quote_the_complete_literal_value": "Citare il valore letterale completo",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Un punto di fine ordinato deve essere un valore letterale",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Utilizzare due endpoint di intervallo; citare testo letterale contenente fasce",
+    "errors.range_start_exceeds_its_end": "La partenza della distanza supera la sua fine",
+    "errors.expected_a_string_or": "Si prevede una stringa o { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "la conservazione deve essere di 1–3650 giorni",
+    "errors.at_most_valid_role_names_are_allowed": "al massimo {MAX_DEFAULT_ROLES} nomi di ruolo validi sono ammessi",
+    "errors.role_does_not_exist": "non esiste il ruolo {missing}",
+    "errors.user_not_found_named": "Utente {name} non è stato trovato",
+    "errors.role_not_found_named": "Non è stato trovato il ruolo {name}",
+    "errors.assignment_attribute_limit": "Un compito supporta fino a 64 attributi"
   }
 }

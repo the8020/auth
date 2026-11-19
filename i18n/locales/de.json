@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Fehlgeschlagene Berechtigungsprüfungen",
     "ui.authorization_audit": "Berechtigungsaudit",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Geben Sie Zulässige Werte ein (* erlaubt jeden Wert) oder wählen Sie ein Attribut.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Die Rolle {name} wird von {value2} verwaltet; kopieren Sie sie, um Ihre eigene Version zu erstellen",
+    "errors.role_already_exists": "Die Rolle {value1} existiert bereits",
+    "errors.role_already_exists_2": "Die Rolle {target} existiert bereits",
+    "errors.role_is_not_a_copy_of_a_package_role": "Die Rolle {name} ist keine Kopie einer Paketrolle",
+    "errors.permission_denied": "Verweigerung der Erlaubnis: {action} ({value})",
+    "errors.incomplete_escape": "Unvollständige Flucht",
+    "errors.unclosed_quoted_value": "Nicht geschlossene Quotewert",
+    "errors.a_nonempty_pattern_is_required": "Ein nicht leeres Muster ist erforderlich.",
+    "errors.quote_the_complete_literal_value": "Zitieren Sie den vollständigen wörtlichen Wert",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Ein geordneter Endpunkt muss ein wörtlicher Wert sein",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Verwenden Sie zwei Endpunkte; zitieren Sie buchstäblichen Text mit Schnittzeichen",
+    "errors.range_start_exceeds_its_end": "Beginn der Reichweite überschreitet sein Ende",
+    "errors.expected_a_string_or": "Erwartete String oder { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "Die Aufbewahrung beträgt 1–3650 Tage.",
+    "errors.at_most_valid_role_names_are_allowed": "Höchstens {MAX_DEFAULT_ROLES} gültige Rollennamen sind zulässig",
+    "errors.role_does_not_exist": "Rolle {missing} nicht vorhanden",
+    "errors.user_not_found_named": "Benutzer {name} wurde nicht gefunden",
+    "errors.role_not_found_named": "Die Rolle {name} wurde nicht gefunden",
+    "errors.assignment_attribute_limit": "Eine Aufgabe unterstützt bis zu 64 Attribute"
   }
 }

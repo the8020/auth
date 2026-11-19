@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Nekade behörighetskontroller",
     "ui.authorization_audit": "Behörighetsrevision",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Ange Tillåtna värden (* tillåter alla värden) eller välj ett Attribut.",
-    "ui.audit_name": "Revision · {name}"
+    "ui.audit_name": "Revision · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Rollen {name} hanteras av {value2}; kopiera den för att skapa din egen version",
+    "errors.role_already_exists": "Roll {value1} finns redan",
+    "errors.role_already_exists_2": "Roll {target} finns redan",
+    "errors.role_is_not_a_copy_of_a_package_role": "Rolle {name} är inte en kopia av en paketrolle",
+    "errors.permission_denied": "Tillstånd avvisat: {action} ({value})",
+    "errors.incomplete_escape": "Flykten är ofullständig.",
+    "errors.unclosed_quoted_value": "Oskrivna noterade värden",
+    "errors.a_nonempty_pattern_is_required": "Ett icke-tomt mönster krävs",
+    "errors.quote_the_complete_literal_value": "Citera det totala bokstavliga värdet",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "En ordnad slutpunkt måste vara ett bokstavligt värde",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Använd två ändpunkter i intervallet; citera bokstavlig text som innehåller bindmärken",
+    "errors.range_start_exceeds_its_end": "Avståndsstart överskrider slutet",
+    "errors.expected_a_string_or": "Förväntad sträng eller { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "Förvaringstid ska vara 1–3650 dagar",
+    "errors.at_most_valid_role_names_are_allowed": "högst {MAX_DEFAULT_ROLES} giltiga rollnamn är tillåtna",
+    "errors.role_does_not_exist": "roll {missing} existerar inte",
+    "errors.user_not_found_named": "Användare {name} hittades inte",
+    "errors.role_not_found_named": "Rolle {name} hittades inte",
+    "errors.assignment_attribute_limit": "Ett uppdrag stöder upp till 64 attribut"
   }
 }

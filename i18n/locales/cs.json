@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Neúspěšná ověření oprávnění",
     "ui.authorization_audit": "Audit oprávnění",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Zadejte Povolené hodnoty (* povoluje všechny hodnoty) nebo vyberte Atribut.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Roli {name} spravuje {value2}; pro vlastní úpravy ji zkopírujte",
+    "errors.role_already_exists": "Role {value1} již existuje",
+    "errors.role_already_exists_2": "Role {target} již existuje",
+    "errors.role_is_not_a_copy_of_a_package_role": "Role {name} není kopií role balíčku",
+    "errors.permission_denied": "Přístup odepřen: {action} ({value})",
+    "errors.incomplete_escape": "Neúplná escape sekvence",
+    "errors.unclosed_quoted_value": "Neuzavřené uvozovky",
+    "errors.a_nonempty_pattern_is_required": "Vzor nesmí být prázdný",
+    "errors.quote_the_complete_literal_value": "Uzavřete celou doslovnou hodnotu do uvozovek",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Mez porovnání musí být doslovná hodnota",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Zadejte dvě meze rozsahu; doslovný text s pomlčkami uzavřete do uvozovek",
+    "errors.range_start_exceeds_its_end": "Dolní mez rozsahu je větší než horní",
+    "errors.expected_a_string_or": "Očekává se řetězec nebo { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "Doba uchování musí být 1–3650 dnů",
+    "errors.at_most_valid_role_names_are_allowed": "Lze zadat nejvýše {MAX_DEFAULT_ROLES} platných názvů rolí",
+    "errors.role_does_not_exist": "Role {missing} neexistuje",
+    "errors.user_not_found_named": "Uživatel {name} nebyl nalezen",
+    "errors.role_not_found_named": "Role {name} nebyla nalezena",
+    "errors.assignment_attribute_limit": "Jedno přiřazení podporuje nejvýše 64 atributů"
   }
 }

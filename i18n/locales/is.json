@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Hafnaðar heimildarathuganir",
     "ui.authorization_audit": "Heimildaúttekt",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Sláðu inn Leyfð gildi (* leyfir öll gildi) eða veldu Eigind.",
-    "ui.audit_name": "Úttekt · {name}"
+    "ui.audit_name": "Úttekt · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Hlutverk {name} er stjórnað af {value2}; afrita það til að búa til eigin útgáfu",
+    "errors.role_already_exists": "Hlutverk {value1} er þegar til",
+    "errors.role_already_exists_2": "Hlutverk {target} er þegar til",
+    "errors.role_is_not_a_copy_of_a_package_role": "Hlutverk {name} er ekki afrit af pakkahlutverki",
+    "errors.permission_denied": "Heimild hafnað: {action} ({value})",
+    "errors.incomplete_escape": "Ófullkominn flótta.",
+    "errors.unclosed_quoted_value": "Óklæddur tilvísunarverð",
+    "errors.a_nonempty_pattern_is_required": "Þörf er á ekki tóm mynstur",
+    "errors.quote_the_complete_literal_value": "Settu upp heildarmerki.",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Lögð niðurstaða þarf að vera bókstaflegt gildi",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Notaðu tvö endpunkta; vitna á bókstaflega texta sem inniheldur stykki",
+    "errors.range_start_exceeds_its_end": "Útgangur á svæðið fer yfir enda",
+    "errors.expected_a_string_or": "Vonast til að strengur eða { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "geymsla verður að vera 1–3650 daga",
+    "errors.at_most_valid_role_names_are_allowed": "að hámarki {MAX_DEFAULT_ROLES} gildandi hlutverki eru leyfð",
+    "errors.role_does_not_exist": "hlutverk {missing} er ekki til",
+    "errors.user_not_found_named": "Notandi {name} fannst ekki",
+    "errors.role_not_found_named": "Ekki fundist hlutverk {name}",
+    "errors.assignment_attribute_limit": "Uppgáfa styður allt að 64 atriði"
   }
 }

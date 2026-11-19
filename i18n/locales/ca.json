@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Comprovacions d'autorització fallides",
     "ui.authorization_audit": "Auditoria d'autorització",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Introdueix Valors permesos (* permet tots els valors) o tria un Atribut.",
-    "ui.audit_name": "Auditoria · {name}"
+    "ui.audit_name": "Auditoria · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "La funció {name} és gestionada per {value2}; copiar-la per fer la seva pròpia versió",
+    "errors.role_already_exists": "El paper {value1} ja existeix",
+    "errors.role_already_exists_2": "El paper {target} ja existeix",
+    "errors.role_is_not_a_copy_of_a_package_role": "El paper {name} no és una còpia d'un paper de paquet",
+    "errors.permission_denied": "Recusat l'autorització: {action} ({value})",
+    "errors.incomplete_escape": "Escapa incompleta",
+    "errors.unclosed_quoted_value": "Valor cotat no clausurat",
+    "errors.a_nonempty_pattern_is_required": "Es requereix un patró no buit",
+    "errors.quote_the_complete_literal_value": "Cita el valor literal complet",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Un punt final ordenat ha de ser un valor literal",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Utilitzeu dos punts finals d'àmplia; cita text literal que contenga hífenes",
+    "errors.range_start_exceeds_its_end": "L'inici de distància excedeix el final",
+    "errors.expected_a_string_or": "Es espera una corda o { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "La retenció ha de ser de 1–3650 dies",
+    "errors.at_most_valid_role_names_are_allowed": "maximum {MAX_DEFAULT_ROLES} noms de papers vàlids són permets",
+    "errors.role_does_not_exist": "la funció {missing} no existeix",
+    "errors.user_not_found_named": "Usuari {name} no es va trobar",
+    "errors.role_not_found_named": "No s'ha trobat el paper {name}",
+    "errors.assignment_attribute_limit": "Una assignació suporta fins a 64 atributs"
   }
 }

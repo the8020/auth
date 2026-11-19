@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Mislukte autorisatiecontroles",
     "ui.authorization_audit": "Autorisatieaudit",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Voer Toegestane waarden in (* staat elke waarde toe) of kies een Attribuut.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Rol {name} wordt beheerd door {value2}; kopieer deze om je eigen versie te maken",
+    "errors.role_already_exists": "Role {value1} bestaat al",
+    "errors.role_already_exists_2": "Role {target} bestaat al",
+    "errors.role_is_not_a_copy_of_a_package_role": "Roel {name} is geen kopie van een pakketrol",
+    "errors.permission_denied": "Toestemming geweigerd: {action} ({value})",
+    "errors.incomplete_escape": "Onvolledige ontsnapping",
+    "errors.unclosed_quoted_value": "Niet-gesloten noteringswaarde",
+    "errors.a_nonempty_pattern_is_required": "Een niet-leeg patroon is vereist",
+    "errors.quote_the_complete_literal_value": "Citeer de volledige letterlijke waarde .",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Een geordend eindpunt moet een letterlijke waarde zijn",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Gebruik twee eindpunten van het bereik; citeren letterlijk tekst met kruispunten",
+    "errors.range_start_exceeds_its_end": "Start van het bereik overschrijdt het einde",
+    "errors.expected_a_string_or": "Verwachte string of { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "bewaring moet 1–3650 dagen duren",
+    "errors.at_most_valid_role_names_are_allowed": "maximaal {MAX_DEFAULT_ROLES} geldige rolnamen zijn toegestaan",
+    "errors.role_does_not_exist": "rol {missing} bestaat niet",
+    "errors.user_not_found_named": "Gebruiker {name} is niet gevonden",
+    "errors.role_not_found_named": "Roel {name} is niet gevonden",
+    "errors.assignment_attribute_limit": "Een opdracht ondersteunt tot 64 attributen"
   }
 }

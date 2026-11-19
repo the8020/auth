@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Nesėkmingos autorizavimo patikros",
     "ui.authorization_audit": "Autorizavimo auditas",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Įveskite leidžiamas reikšmes (* leidžia visas reikšmes) arba pasirinkite atributą.",
-    "ui.audit_name": "Auditas · {name}"
+    "ui.audit_name": "Auditas · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Rolią {name} valdo {value2}; kopijuokite ją, kad padarytumėte savo versiją",
+    "errors.role_already_exists": "Roli {value1} jau egzistuoja",
+    "errors.role_already_exists_2": "Roli {target} jau egzistuoja",
+    "errors.role_is_not_a_copy_of_a_package_role": "Rola {name} nėra paketinio vaidmens kopija",
+    "errors.permission_denied": "Leidimas atsisakytas: {action} ({value})",
+    "errors.incomplete_escape": "Nepilnas pabėgimas.",
+    "errors.unclosed_quoted_value": "Neapsidraudžiama kotiruota vertė",
+    "errors.a_nonempty_pattern_is_required": "Reikalingas ne tuščias modelis",
+    "errors.quote_the_complete_literal_value": "Cituoti visą tiesioginę vertę",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Įpareigotas galutinis taškas turi būti tiesioginė vertė",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Naudokite du intervalaus galutinius taškus; cituokite tiesioginį tekstą, kuriame yra žvilgsnių",
+    "errors.range_start_exceeds_its_end": "Nuo pradžios iki pabaigos",
+    "errors.expected_a_string_or": "Laukiama eilutė arba { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "saugojimo trukmė turi būti 1–3650 dienų",
+    "errors.at_most_valid_role_names_are_allowed": "ne daugiau kaip {MAX_DEFAULT_ROLES} galiojančių vaidmenų pavadinimų leidžiama",
+    "errors.role_does_not_exist": "{missing} pozicija nėra",
+    "errors.user_not_found_named": "Naudotojas {name} nebuvo rastas",
+    "errors.role_not_found_named": "Nepatikyta rolio {name}",
+    "errors.assignment_attribute_limit": "Įrašas palaiko iki 64 atributus"
   }
 }

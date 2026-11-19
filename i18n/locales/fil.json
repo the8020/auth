@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Nabigong pagsusuri ng awtorisasyon",
     "ui.authorization_audit": "Audit ng awtorisasyon",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Ilagay ang Mga pinapayagang halaga (* para sa lahat) o pumili ng Attribute.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Ang papel {name} ay pinamamahalaan ng {value2}; kopyahin ito upang gumawa ng iyong sariling bersyon",
+    "errors.role_already_exists": "Nagkaroon na ng papel na {value1}",
+    "errors.role_already_exists_2": "Nagkaroon na ng papel na {target}",
+    "errors.role_is_not_a_copy_of_a_package_role": "Ang papel {name} ay hindi kopya ng isang papel sa pakete",
+    "errors.permission_denied": "Hindi na pinapayagan: {action} ({value})",
+    "errors.incomplete_escape": "Hindi kumpletong paglayag",
+    "errors.unclosed_quoted_value": "Hindi nakatakda na halaga ng binuksan",
+    "errors.a_nonempty_pattern_is_required": "Kinakailangan ang isang hindi walang laman na pattern",
+    "errors.quote_the_complete_literal_value": "I-quote ang buong literal na halaga",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Ang isang ordinadong endpoint ay dapat na isang literal na halaga",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Gamitin ang dalawang mga endpoint ng range; quote literal na teksto na naglalaman ng mga hyphens",
+    "errors.range_start_exceeds_its_end": "Ang start ng range ay higit sa katapusan nito",
+    "errors.expected_a_string_or": "Inaasahan na isang string o { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "ang pagpapanatili ay dapat na 1–3650 araw",
+    "errors.at_most_valid_role_names_are_allowed": "maximum {MAX_DEFAULT_ROLES} mga valid role name ay pinapayagan",
+    "errors.role_does_not_exist": "papel {missing} ay hindi umiiral",
+    "errors.user_not_found_named": "User {name} ay hindi natagpuan",
+    "errors.role_not_found_named": "Hindi natagpuan ang papel {name}",
+    "errors.assignment_attribute_limit": "Ang isang assignment ay sumusuporta sa hanggang 64 mga katangian"
   }
 }

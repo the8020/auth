@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Başarısız yetkilendirme denetimleri",
     "ui.authorization_audit": "Yetkilendirme denetimi",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "İzin verilen değerleri girin (* her değere izin verir) veya bir Öznitelik seçin.",
-    "ui.audit_name": "Denetim · {name}"
+    "ui.audit_name": "Denetim · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Role {name} {value2} tarafından yönetilir; kendi versiyonunuzu oluşturmak için kopyalayın",
+    "errors.role_already_exists": "{value1} rolü zaten var.",
+    "errors.role_already_exists_2": "{target} rolü zaten var.",
+    "errors.role_is_not_a_copy_of_a_package_role": "Role {name} bir paket rolünün bir kopyası değildir.",
+    "errors.permission_denied": "İzin reddedildi: {action} ({value})",
+    "errors.incomplete_escape": "Tam bir kaçış .",
+    "errors.unclosed_quoted_value": "Kapalı olmayan alıntılanmış değer",
+    "errors.a_nonempty_pattern_is_required": "Boş olmayan bir kalıp gereklidir.",
+    "errors.quote_the_complete_literal_value": "Tam anlamlı değeri alıntılayın .",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Düzenlenmiş bir son nokta kelimenin anlamı olmalıdır.",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "İki aralığın son noktasını kullanın; kısayolları içeren sözcük metni alıntılayın",
+    "errors.range_start_exceeds_its_end": "Aralık başlangıcı sonunu aşar.",
+    "errors.expected_a_string_or": "Beklenen bir ip veya { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "saklama süreci 1–3650 gün olmalıdır.",
+    "errors.at_most_valid_role_names_are_allowed": "en fazla {MAX_DEFAULT_ROLES} geçerli rol isimleri izin verilir",
+    "errors.role_does_not_exist": "Görev {missing} yok",
+    "errors.user_not_found_named": "Kullanıcı {name} bulunamadı",
+    "errors.role_not_found_named": "Role {name} bulunamadı",
+    "errors.assignment_attribute_limit": "Bir görev 64 niteliği destekler"
   }
 }

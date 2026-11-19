@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Nesekmīgas autorizācijas pārbaudes",
     "ui.authorization_audit": "Autorizācijas audits",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Ievadiet Atļautās vērtības (* atļauj visas vērtības) vai izvēlieties Atribūtu.",
-    "ui.audit_name": "Audits · {name}"
+    "ui.audit_name": "Audits · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Roli {name} pārvalda {value2}; kopējiet to, lai izveidotu savu versiju",
+    "errors.role_already_exists": "Role {value1} jau pastāv",
+    "errors.role_already_exists_2": "Role {target} jau pastāv",
+    "errors.role_is_not_a_copy_of_a_package_role": "Role {name} nav iepakojuma rola kopija",
+    "errors.permission_denied": "Atļaujas noraidīšana: {action} ({value})",
+    "errors.incomplete_escape": "Nesaprotama bēgšana",
+    "errors.unclosed_quoted_value": "Neatklāta kotēta vērtība",
+    "errors.a_nonempty_pattern_is_required": "Vajag nejaušu modeļu",
+    "errors.quote_the_complete_literal_value": "Citēt pilnā rakstiskā vērtība",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Lai pabeigtu, jānosaka īsta vērtība",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Izmantojiet divus intervāla beigās; citēt literālo tekstu, kas satur slīpumu",
+    "errors.range_start_exceeds_its_end": "Izstādes laiks pārsniedz termiņu",
+    "errors.expected_a_string_or": "Izskatās šķiedras vai { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "uzglabāšanas termiņš ir 1–3650 dienas",
+    "errors.at_most_valid_role_names_are_allowed": "ir atļauts maksimāli {MAX_DEFAULT_ROLES} spēkā esošie lomu nosaukumi",
+    "errors.role_does_not_exist": "pozīcija {missing} nav",
+    "errors.user_not_found_named": "lietotājs {name} nav rastis",
+    "errors.role_not_found_named": "Role {name} nav atrodama",
+    "errors.assignment_attribute_limit": "Uzdevumā atbalsta līdz 64 attributus"
   }
 }

@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "การตรวจสิทธิ์ที่ไม่ผ่าน",
     "ui.authorization_audit": "บันทึกตรวจสิทธิ์",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "ป้อนค่าที่อนุญาต (* อนุญาตทุกค่า) หรือเลือกแอตทริบิวต์",
-    "ui.audit_name": "บันทึกตรวจสอบ · {name}"
+    "ui.audit_name": "บันทึกตรวจสอบ · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "หน้าที่ {name} ถูกจัดการโดย {value2}; สําเนามันเพื่อสร้างฉบับของคุณเอง",
+    "errors.role_already_exists": "บท {value1} มีอยู่แล้ว",
+    "errors.role_already_exists_2": "บท {target} มีอยู่แล้ว",
+    "errors.role_is_not_a_copy_of_a_package_role": "หัวหอก {name} ไม่เป็นสําเนาของหัวหอกบรรจุ",
+    "errors.permission_denied": "การปฏิเสธอนุญาต: {action} ({value})",
+    "errors.incomplete_escape": "การหนีไม่สมบูรณ์",
+    "errors.unclosed_quoted_value": "ราคาถูกที่ไม่ปิด",
+    "errors.a_nonempty_pattern_is_required": "รูปแบบที่ไม่ว่างต้อง",
+    "errors.quote_the_complete_literal_value": "อ้างค่าตัวจริงทั้งหมด",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "จุดปลายที่ได้รับการจัดลําดับต้องเป็นค่าตัวจริง",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "ใช้จุดปลายระยะสองจุด; อ้างข้อความตามตัวจริงที่มีเส้นประกอบ",
+    "errors.range_start_exceeds_its_end": "เริ่มระยะเกินปลาย",
+    "errors.expected_a_string_or": "คาดหวังเส้นหรือ { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "การเก็บรักษาต้องอยู่ที่ 1–3650 วัน",
+    "errors.at_most_valid_role_names_are_allowed": "ยิ่งกว่า {MAX_DEFAULT_ROLES} ชื่อบทที่ใช้ได้",
+    "errors.role_does_not_exist": "หัวหิน {missing} ไม่มี",
+    "errors.user_not_found_named": "ผู้ใช้ {name} ไม่พบ",
+    "errors.role_not_found_named": "หัวข้อ {name} ไม่พบ",
+    "errors.assignment_attribute_limit": "การมอบหมายสนับสนุนถึง 64 คุณสมบัติ"
   }
 }

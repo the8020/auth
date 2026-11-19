@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Neúspešné overenia oprávnenia",
     "ui.authorization_audit": "Audit oprávnení",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Zadajte Povolené hodnoty (* povoľuje všetky hodnoty) alebo vyberte Atribút.",
-    "ui.audit_name": "Audit · {name}"
+    "ui.audit_name": "Audit · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Úloha {name} je spravovaná pomocou {value2}; kopírovať ju, aby ste vytvorili vlastnú verziu",
+    "errors.role_already_exists": "Úloha {value1} už existuje",
+    "errors.role_already_exists_2": "Úloha {target} už existuje",
+    "errors.role_is_not_a_copy_of_a_package_role": "Úloha {name} nie je kópiou balíka úlohy",
+    "errors.permission_denied": "Odmietnutie povolenia: {action} ({value})",
+    "errors.incomplete_escape": "Neúplný útek",
+    "errors.unclosed_quoted_value": "Nezatvorená kótovaná hodnota",
+    "errors.a_nonempty_pattern_is_required": "Vyžaduje sa neprázdný vzor",
+    "errors.quote_the_complete_literal_value": "Citovať úplnú doslovnú hodnotu",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Úradový bod musí byť doslovná hodnota",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Použite dva koncové body rozsahu; citovať doslovný text obsahujúci zákroky",
+    "errors.range_start_exceeds_its_end": "Počet rozsahov prekračuje jeho koniec",
+    "errors.expected_a_string_or": "Očakávaný reťazec alebo { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "uchovávanie musí trvať 1–3650 dní",
+    "errors.at_most_valid_role_names_are_allowed": "Maximálne {MAX_DEFAULT_ROLES} platných rolových názvov sú povolené",
+    "errors.role_does_not_exist": "rola {missing} neexistuje",
+    "errors.user_not_found_named": "Používateľ {name} nebol nájdený",
+    "errors.role_not_found_named": "Úloha {name} nebola nájdená",
+    "errors.assignment_attribute_limit": "Zadanie podporuje až 64 atribútov"
   }
 }

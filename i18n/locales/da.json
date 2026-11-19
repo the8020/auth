@@ -176,6 +176,25 @@
     "ui.failed_authorization_checks": "Afviste adgangskontroller",
     "ui.authorization_audit": "Adgangsrevision",
     "ui.enter_allowed_values_allows_every_value_or_choose_an_attribute": "Angiv Tilladte værdier (* tillader alle værdier), eller vælg en Attribut.",
-    "ui.audit_name": "Revision · {name}"
+    "ui.audit_name": "Revision · {name}",
+    "errors.role_is_managed_by_copy_it_to_make_your_own": "Rollen {name} administreres af {value2}; kopier den for at lave din egen version",
+    "errors.role_already_exists": "Rolle {value1} findes allerede",
+    "errors.role_already_exists_2": "Rolle {target} findes allerede",
+    "errors.role_is_not_a_copy_of_a_package_role": "Rolle {name} er ikke en kopi af en pakkerolle",
+    "errors.permission_denied": "Tilladelse nægtet: {action} ({value})",
+    "errors.incomplete_escape": "Ufulgt flugt.",
+    "errors.unclosed_quoted_value": "Udskrevet noteret værdi",
+    "errors.a_nonempty_pattern_is_required": "En ikke-tom mønster er nødvendig",
+    "errors.quote_the_complete_literal_value": "Citater den fuldstændige bogstavelige værdi",
+    "errors.an_ordered_endpoint_must_be_a_literal_value": "Et ordnet endepunkt skal være en bogstavelig værdi",
+    "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens": "Brug to endpoints i intervallet; citere bogstavelig tekst, der indeholder binævn",
+    "errors.range_start_exceeds_its_end": "Start af rækkevidden overstiger sin ende",
+    "errors.expected_a_string_or": "Forventet string eller { comparisons: string }",
+    "errors.retention_must_be_1_3650_days": "opbevaring skal være 1–3650 dage",
+    "errors.at_most_valid_role_names_are_allowed": "højst {MAX_DEFAULT_ROLES} gyldige rollenavne er tilladt",
+    "errors.role_does_not_exist": "Rolle {missing} findes ikke",
+    "errors.user_not_found_named": "Bruger {name} blev ikke fundet",
+    "errors.role_not_found_named": "Rolle {name} blev ikke fundet",
+    "errors.assignment_attribute_limit": "En opgave understøtter op til 64 attributter"
   }
 }
