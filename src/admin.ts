@@ -1,3 +1,6 @@
+import { prepareTexts } from "/p/the8020/i18n/mod.ts";
+import { localizedText as resolveMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/auth/i18n/messages.ts";
 import { metadataText } from "/p/the8020/packages/localization.ts";
 import { AdminCommandError } from "@the8020/kernel";
 import { type Database, db } from "/p/the8020/db/mod.ts";
@@ -23,10 +26,15 @@ import {
   type RoleEntryValues,
 } from "./matching.ts";
 
-function missing(kind: string, name: string): never {
+async function missing(kind: "User" | "Role", name: string): Promise<never> {
   throw new AdminCommandError({
     code: "not_found",
-    message: `${kind} ${name} was not found`,
+    message: await resolveMessage(messageSymbol(
+      kind === "User"
+        ? "errors.user_not_found_named"
+        : "errors.role_not_found_named",
+      { name },
+    )),
   });
 }
 
@@ -52,8 +60,12 @@ async function requireUnmanaged(
   if (row?.managed) {
     throw new AdminCommandError({
       code: "conflict",
-      message:
-        `Role ${name} is managed by ${row.managed}; copy it to make your own version`,
+      message: await resolveMessage(
+        messageSymbol("errors.role_is_managed_by_copy_it_to_make_your_own", {
+          name: String(name),
+          value2: String(row.managed),
+        }),
+      ),
     });
   }
 }
@@ -64,7 +76,7 @@ async function lockUser(tx: Transaction<Database>, username: string) {
     "=",
     username,
   ).executeTakeFirst();
-  if (!result.numUpdatedRows) missing("User", username);
+  if (!result.numUpdatedRows) await missing("User", username);
 }
 
 export async function listRoles() {
@@ -81,13 +93,14 @@ export async function listRoles() {
 export async function getRole(name: string) {
   await requirePermission("the8020.auth.roles.view", name);
   return await Roles.selectAll().where("name", "=", name).executeTakeFirst() ??
-    missing("Role", name);
+    await missing("Role", name);
 }
 
 export async function createRole(
   input: z.infer<typeof role> & { collection?: boolean },
   ifMissing = false,
 ) {
+  await prepareTexts(messageSymbol("errors.incomplete_escape"));
   const data = role.parse(input);
   await requirePermission("the8020.auth.roles.edit", data.name);
   const result = await Roles.insert({
@@ -97,7 +110,11 @@ export async function createRole(
   if (!result.numInsertedOrUpdatedRows && !ifMissing) {
     throw new AdminCommandError({
       code: "conflict",
-      message: `Role ${data.name} already exists`,
+      message: await resolveMessage(
+        messageSymbol("errors.role_already_exists", {
+          value1: String(data.name),
+        }),
+      ),
     });
   }
   return result.numInsertedOrUpdatedRows
@@ -109,6 +126,7 @@ export async function createRole(
 export async function saveRole(
   input: z.infer<typeof role> & { collection?: boolean },
 ) {
+  await prepareTexts(messageSymbol("errors.incomplete_escape"));
   const data = role.parse(input);
   await requirePermission("the8020.auth.roles.edit", data.name);
   await requireUnmanaged(db, data.name);
@@ -117,7 +135,7 @@ export async function saveRole(
     description: data.description,
     permissions: data.permissions,
   }).where("name", "=", data.name).executeTakeFirst();
-  if (!result.numUpdatedRows) missing("Role", data.name);
+  if (!result.numUpdatedRows) await missing("Role", data.name);
   return data;
 }
 
@@ -126,12 +144,13 @@ export async function setPermission(
   action: string,
   values?: RoleEntryValues,
 ) {
+  await prepareTexts(messageSymbol("errors.incomplete_escape"));
   roleName.parse(name);
   if (values !== undefined) permissions.parse({ [action]: values });
   await requirePermission("the8020.auth.roles.edit", name);
   await db.transaction().execute(async (tx) => {
     // Lock this role before editing one entry, preserving concurrent edits.
-    if (!await lockRole(tx, name)) missing("Role", name);
+    if (!await lockRole(tx, name)) await missing("Role", name);
     await requireUnmanaged(tx, name);
     const row = await tx.selectFrom(Roles.table).selectAll().where(
       "name",
@@ -155,7 +174,7 @@ export async function setPermission(
 export async function deleteRole(name: string) {
   await requirePermission("the8020.auth.roles.delete", name);
   await db.transaction().execute(async (tx) => {
-    if (!await lockRole(tx, name)) missing("Role", name);
+    if (!await lockRole(tx, name)) await missing("Role", name);
     await requireUnmanaged(tx, name);
     await tx.deleteFrom(UserRoles.table).where("role", "=", name).execute();
     await tx.deleteFrom(RoleIncludes.table).where((eb) =>
@@ -163,7 +182,7 @@ export async function deleteRole(name: string) {
     ).execute();
     const result = await tx.deleteFrom(Roles.table).where("name", "=", name)
       .executeTakeFirst();
-    if (!result.numDeletedRows) missing("Role", name);
+    if (!result.numDeletedRows) await missing("Role", name);
   });
 }
 
@@ -191,6 +210,7 @@ export async function assignRole(
   assigned = true,
   attributes?: Record<string, PermissionValues>,
 ) {
+  await prepareTexts(messageSymbol("errors.incomplete_escape"));
   const data = assignment.parse({ username, role: name, attributes });
   await requirePermission("the8020.auth.users.edit", username);
   await requirePermission("the8020.auth.roles.assign", name);
@@ -202,7 +222,7 @@ export async function assignRole(
     }
     // Serialize assignment with account and role deletion.
     await lockUser(tx, username);
-    if (!await lockRole(tx, name)) missing("Role", name);
+    if (!await lockRole(tx, name)) await missing("Role", name);
     await tx.insertInto(UserRoles.table).values(data).onConflict((c) =>
       attributes === undefined
         ? c.columns(["username", "role"]).doNothing()
@@ -231,7 +251,7 @@ export async function includeRole(
       return;
     }
     for (const target of Array.from(new Set([name, included])).sort()) {
-      if (!await lockRole(tx, target)) missing("Role", target);
+      if (!await lockRole(tx, target)) await missing("Role", target);
     }
     // Managed roles may be included elsewhere but never gain inclusions.
     await requireUnmanaged(tx, name);
@@ -291,6 +311,7 @@ export async function userRoles(username: string) {
  */
 export async function ownRoles() {
   if (!context.authenticated) {
+    await prepareTexts(messageSymbol("errors.permission_denied"));
     throw new AuthorizationError("the8020.auth.users.view", "");
   }
   const rows = await rolesOf(context.username);
@@ -394,7 +415,7 @@ export async function copyRole(source: string, target: string) {
   await requirePermission("the8020.auth.roles.view", source);
   await requirePermission("the8020.auth.roles.edit", target);
   await db.transaction().execute(async (tx) => {
-    if (!await lockRole(tx, source)) missing("Role", source);
+    if (!await lockRole(tx, source)) await missing("Role", source);
     const template = await tx.selectFrom(Roles.table).selectAll().where(
       "name",
       "=",
@@ -419,7 +440,11 @@ export async function copyRole(source: string, target: string) {
     if (!inserted.numInsertedOrUpdatedRows) {
       throw new AdminCommandError({
         code: "conflict",
-        message: `Role ${target} already exists`,
+        message: await resolveMessage(
+          messageSymbol("errors.role_already_exists_2", {
+            target: String(target),
+          }),
+        ),
       });
     }
     const links = await tx.selectFrom(RoleIncludes.table).select("included")
@@ -450,7 +475,7 @@ export async function templateChanges(name: string): Promise<{
 }> {
   await requirePermission("the8020.auth.roles.view", name);
   const copy = await Roles.selectAll().where("name", "=", name)
-    .executeTakeFirst() ?? missing("Role", name);
+    .executeTakeFirst() ?? await missing("Role", name);
   if (!copy.copiedFrom) return { missing: false, changes: [] };
   const template = await Roles.selectAll().where(
     "name",
@@ -524,7 +549,7 @@ export async function templateChanges(name: string): Promise<{
 export async function adoptTemplate(name: string) {
   await requirePermission("the8020.auth.roles.edit", name);
   await db.transaction().execute(async (tx) => {
-    if (!await lockRole(tx, name)) missing("Role", name);
+    if (!await lockRole(tx, name)) await missing("Role", name);
     const copy = await tx.selectFrom(Roles.table).selectAll().where(
       "name",
       "=",
@@ -533,14 +558,18 @@ export async function adoptTemplate(name: string) {
     if (!copy.copiedFrom) {
       throw new AdminCommandError({
         code: "conflict",
-        message: `Role ${name} is not a copy of a package role`,
+        message: await resolveMessage(
+          messageSymbol("errors.role_is_not_a_copy_of_a_package_role", {
+            name: String(name),
+          }),
+        ),
       });
     }
     const template = await tx.selectFrom(Roles.table).selectAll().where(
       "name",
       "=",
       copy.copiedFrom.role,
-    ).executeTakeFirst() ?? missing("Role", copy.copiedFrom.role);
+    ).executeTakeFirst() ?? await missing("Role", copy.copiedFrom.role);
     await tx.updateTable(Roles.table).set({
       description: template.description,
       permissions: template.permissions,

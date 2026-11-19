@@ -2,3 +2,4 @@ schema = 1
 uui = true
 discoverable = true
 description = "Manage authorization roles"
+shortcut = "ROLE"

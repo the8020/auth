@@ -86,7 +86,7 @@ export const values = z.union([
 export const assignmentAttributes = field(
   z.record(attributeName, expressionValues).refine(
     (value) => Object.keys(value).length <= 64,
-    "An assignment supports up to 64 attributes",
+    { params: { text: msg("errors.assignment_attribute_limit") } },
   ),
   {
     label: msg("screens.attribute_values"),

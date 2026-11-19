@@ -1,3 +1,5 @@
+import { text as formatMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/auth/i18n/messages.ts";
 /** Split outside quoted literals, retaining quotes and escapes for parsing. */
 function split(source: string, separator: string): string[] {
   const parts = [""];
@@ -5,7 +7,11 @@ function split(source: string, separator: string): string[] {
   for (let i = 0; i < source.length; i++) {
     const char = source[i]!;
     if (char === "\\") {
-      if (++i === source.length) throw new TypeError("Incomplete escape");
+      if (++i === source.length) {
+        throw new TypeError(
+          formatMessage(messageSymbol("errors.incomplete_escape")),
+        );
+      }
       parts[parts.length - 1] += char + source[i];
     } else if (char === separator && !quoted) parts.push("");
     else {
@@ -13,16 +19,26 @@ function split(source: string, separator: string): string[] {
       parts[parts.length - 1] += char;
     }
   }
-  if (quoted) throw new TypeError("Unclosed quoted value");
+  if (quoted) {
+    throw new TypeError(
+      formatMessage(messageSymbol("errors.unclosed_quoted_value")),
+    );
+  }
   return parts;
 }
 
 export function pattern(source: string): (value: string) => boolean {
   if (!source) {
-    throw new TypeError("A nonempty pattern is required");
+    throw new TypeError(
+      formatMessage(messageSymbol("errors.a_nonempty_pattern_is_required")),
+    );
   }
   const tokens = source.match(/\\[\s\S]|[\s\S]/gu)!;
-  if (tokens.includes("\\")) throw new TypeError("Incomplete escape");
+  if (tokens.includes("\\")) {
+    throw new TypeError(
+      formatMessage(messageSymbol("errors.incomplete_escape")),
+    );
+  }
   return (value) => {
     const chars = Array.from(value);
     let p = 0, v = 0, star = -1, retry = 0;
@@ -92,7 +108,9 @@ function compare(a: string, b: string, numbers: boolean): number {
 
 function quotedValue(source: string): string {
   if (!/^"(?:\\[\s\S]|[^"\\])*"$/u.test(source)) {
-    throw new TypeError("Quote the complete literal value");
+    throw new TypeError(
+      formatMessage(messageSymbol("errors.quote_the_complete_literal_value")),
+    );
   }
   return source.slice(1, -1).replace(/\\([\s\S])/gu, "$1");
 }
@@ -104,7 +122,13 @@ function endpoint(source: string): string {
     source.match(/\\[\s\S]|[\s\S]/gu)!.some((token) =>
       token === "*" || token === "?" || token === "\\" || token === '"'
     )
-  ) throw new TypeError("An ordered endpoint must be a literal value");
+  ) {
+    throw new TypeError(
+      formatMessage(
+        messageSymbol("errors.an_ordered_endpoint_must_be_a_literal_value"),
+      ),
+    );
+  }
   return source.replace(/\\([\s\S])/gu, "$1");
 }
 
@@ -134,20 +158,28 @@ function term(source: string): ValueTerm {
   const parts = numberRange ? numberRange.slice(1) : split(source, "-");
   if (parts.length === 1) {
     if (source.match(/\\[\s\S]|[\s\S]/gu)?.includes('"')) {
-      throw new TypeError("Quote the complete literal value");
+      throw new TypeError(
+        formatMessage(messageSymbol("errors.quote_the_complete_literal_value")),
+      );
     }
     pattern(source);
     return { kind: "pattern", source };
   }
   if (parts.length !== 2) {
     throw new TypeError(
-      "Use two range endpoints; quote literal text containing hyphens",
+      formatMessage(
+        messageSymbol(
+          "errors.use_two_range_endpoints_quote_literal_text_containing_hyphens",
+        ),
+      ),
     );
   }
   const [start, end] = parts.map(endpoint) as [string, string];
   const numbers = numeric.test(start) && numeric.test(end);
   if (compare(start, end, numbers) > 0) {
-    throw new TypeError("Range start exceeds its end");
+    throw new TypeError(
+      formatMessage(messageSymbol("errors.range_start_exceeds_its_end")),
+    );
   }
   return {
     kind: "ordered",
@@ -167,7 +199,11 @@ export function parseExpression(input: PermissionValues): PermissionTerm[] {
     (!input || typeof input !== "object" || Array.isArray(input) ||
       Object.keys(input).length !== 1 || !Object.hasOwn(input, "comparisons") ||
       typeof input.comparisons !== "string")
-  ) throw new TypeError("Expected a string or { comparisons: string }");
+  ) {
+    throw new TypeError(
+      formatMessage(messageSymbol("errors.expected_a_string_or")),
+    );
+  }
   const source = wrapped ? input.comparisons : input;
   return split(source, ",").map((part) => {
     part = part.trim();

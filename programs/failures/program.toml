@@ -2,3 +2,4 @@ schema = 1
 uui = true
 discoverable = true
 description = "Inspect failed authorization checks"
+shortcut = "AUTHLOG"

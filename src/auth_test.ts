@@ -274,3 +274,39 @@ Deno.test({
     }
   },
 });
+
+Deno.test("permission refusals prepare the auth catalog in a cold Czech scope", async () => {
+  const fixture = await authDatabase();
+  const { Localization, withLocalization, defaultConfiguration } = await import(
+    "/p/the8020/i18n/mod.ts"
+  );
+  const { requirePermission, AuthorizationError } = await import("./check.ts");
+  try {
+    fixture.asUser("unknown");
+    let loads = 0;
+    await withLocalization(
+      new Localization("cs", defaultConfiguration, (packageId) => {
+        assertEquals(packageId, "the8020/auth");
+        loads++;
+        return Promise.resolve({
+          package: packageId,
+          language: "cs",
+          texts: {
+            "errors.permission_denied": "Přístup odepřen: {action} ({value})",
+          },
+        });
+      }),
+      async () => {
+        const error = await assertRejects(
+          () => requirePermission("example.edit", "ABC"),
+          AuthorizationError,
+          "Přístup odepřen: example.edit (ABC)",
+        );
+        assertEquals(error.code, "forbidden");
+        assertEquals(loads, 1);
+      },
+    );
+  } finally {
+    fixture.close();
+  }
+});

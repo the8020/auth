@@ -1,3 +1,5 @@
+import { prepareTexts, text as formatMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/auth/i18n/messages.ts";
 import { context } from "@the8020/context";
 import { AdminCommandError } from "@the8020/kernel";
 import { action as actionField, value as valueField } from "../types/auth.ts";
@@ -7,7 +9,12 @@ export class AuthorizationError extends AdminCommandError {
   constructor(action: string, value: string) {
     super({
       code: "forbidden",
-      message: `Permission denied: ${action} (${value})`,
+      message: formatMessage(
+        messageSymbol("errors.permission_denied", {
+          action: String(action),
+          value: String(value),
+        }),
+      ),
     });
   }
 }
@@ -55,5 +62,8 @@ export async function requirePermission(
   action: string,
   value: string,
 ): Promise<void> {
-  if (!await check(action, value)) throw new AuthorizationError(action, value);
+  if (!await check(action, value)) {
+    await prepareTexts(messageSymbol("errors.permission_denied"));
+    throw new AuthorizationError(action, value);
+  }
 }

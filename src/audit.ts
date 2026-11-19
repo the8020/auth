@@ -1,3 +1,5 @@
+import { localizedText as resolveMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/auth/i18n/messages.ts";
 import { AdminCommandError } from "@the8020/kernel";
 import { db } from "/p/the8020/db/mod.ts";
 import { z } from "/p/the8020/db/fields.ts";
@@ -35,7 +37,9 @@ export async function setAuditRetention(days: number): Promise<number> {
   if (!parsed.success) {
     throw new AdminCommandError({
       code: "invalid_arguments",
-      message: "retention must be 1–3650 days",
+      message: await resolveMessage(
+        messageSymbol("errors.retention_must_be_1_3650_days"),
+      ),
     });
   }
   const values = {
