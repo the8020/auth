@@ -1,5 +1,6 @@
 import { parse } from "/p/the8020/packages/toml.ts";
-import { db } from "/p/the8020/db/mod.ts";
+import { type Database, db } from "/p/the8020/db/mod.ts";
+import type { Transaction } from "/p/the8020/db/kysely.ts";
 import { z } from "/p/the8020/db/fields.ts";
 import { permissions, role, roleName } from "../types/auth.ts";
 import Roles from "../tables/roles.ts";
@@ -160,18 +161,30 @@ export async function indexRoles(
   scope: Readonly<IndexScope>,
   root = new URL("file:///workspace/packages/"),
 ): Promise<void> {
+  const pending: {
+    selected: IndexScope["packages"][number];
+    declared?: DeclaredRole[];
+    problems: string[];
+  }[] = [];
   for (const selected of scope.packages) {
     const problems: string[] = [];
+    const item: typeof pending[number] = { selected, problems };
+    pending.push(item);
     try {
       const declared = selected.active
         ? await readDeclarations(selected.package_id, root)
         : [];
-      await synchronize(
-        selected.package_id,
-        selected.package_commit,
-        declared,
-        problems,
+      await db.transaction().execute((tx) =>
+        declareRoles(
+          tx,
+          selected.package_id,
+          selected.package_commit,
+          declared,
+          problems,
+          true,
+        )
       );
+      item.declared = declared;
     } catch (error) {
       problems.push(error instanceof Error ? error.message : String(error));
     }
@@ -182,6 +195,21 @@ export async function indexRoles(
           ? await readAuditFlags(selected.package_id, root, problems)
           : new Map(),
       );
+    } catch (error) {
+      problems.push(error instanceof Error ? error.message : String(error));
+    }
+  }
+  // Resolve cross-package inclusions after the complete selected set exists.
+  for (const { selected, declared, problems } of pending) {
+    try {
+      if (declared) {
+        await synchronize(
+          selected.package_id,
+          selected.package_commit,
+          declared,
+          problems,
+        );
+      }
     } catch (error) {
       problems.push(error instanceof Error ? error.message : String(error));
     }
@@ -199,85 +227,118 @@ export async function synchronize(
   problems: string[],
 ): Promise<void> {
   await db.transaction().execute(async (tx) => {
-    const names = declared.map((item) => item.name);
-    const current = names.length
-      ? await tx.selectFrom(Roles.table).select(["name", "managed"]).where(
+    const applied = await declareRoles(
+      tx,
+      packageId,
+      commit,
+      declared,
+      problems,
+    );
+    await synchronizeIncludes(tx, packageId, declared, applied, problems);
+  });
+}
+
+async function declareRoles(
+  tx: Transaction<Database>,
+  packageId: string,
+  commit: string,
+  declared: readonly DeclaredRole[],
+  problems: string[],
+  createOnly = false,
+): Promise<DeclaredRole[]> {
+  const names = declared.map((item) => item.name);
+  const current = names.length
+    ? await tx.selectFrom(Roles.table).select(["name", "managed"]).where(
+      "name",
+      "in",
+      names,
+    ).execute()
+    : [];
+  const owners = new Map(current.map((row) => [row.name, row.managed]));
+  const applied: DeclaredRole[] = [];
+  for (const item of declared) {
+    if (createOnly && owners.has(item.name)) continue;
+    if (owners.has(item.name) && owners.get(item.name) !== packageId) {
+      problems.push(
+        `Role ${item.name} already exists and is not managed by ${packageId}`,
+      );
+      continue;
+    }
+    const values = {
+      description: item.description,
+      permissions: item.permissions,
+      collection: item.collection,
+      managed: packageId,
+      managedCommit: commit,
+      obsolete: false,
+      copiedFrom: null,
+    };
+    await tx.insertInto(Roles.table).values({ name: item.name, ...values })
+      .onConflict((c) =>
+        createOnly
+          ? c.column("name").doNothing()
+          : c.column("name").doUpdateSet(values)
+      ).execute();
+    applied.push(item);
+  }
+  return applied;
+}
+
+async function synchronizeIncludes(
+  tx: Transaction<Database>,
+  packageId: string,
+  declared: readonly DeclaredRole[],
+  applied: readonly DeclaredRole[],
+  problems: string[],
+): Promise<void> {
+  const names = declared.map((item) => item.name);
+  for (const item of applied) {
+    await tx.deleteFrom(RoleIncludes.table).where("role", "=", item.name)
+      .execute();
+    for (const included of item.includes) {
+      const exists = await tx.selectFrom(Roles.table).select("name").where(
         "name",
-        "in",
-        names,
-      ).execute()
-      : [];
-    const owners = new Map(current.map((row) => [row.name, row.managed]));
-    const applied: DeclaredRole[] = [];
-    for (const item of declared) {
-      if (owners.has(item.name) && owners.get(item.name) !== packageId) {
-        problems.push(
-          `Role ${item.name} already exists and is not managed by ${packageId}`,
-        );
+        "=",
+        included,
+      ).executeTakeFirst();
+      if (!exists) {
+        problems.push(`Role ${item.name} includes missing role ${included}`);
         continue;
       }
-      const values = {
-        description: item.description,
-        permissions: item.permissions,
-        collection: item.collection,
-        managed: packageId,
-        managedCommit: commit,
-        obsolete: false,
-        copiedFrom: null,
-      };
-      await tx.insertInto(Roles.table).values({ name: item.name, ...values })
-        .onConflict((c) => c.column("name").doUpdateSet(values)).execute();
-      applied.push(item);
-    }
-    // Inclusions follow the declaration once every declared role exists.
-    for (const item of applied) {
-      await tx.deleteFrom(RoleIncludes.table).where("role", "=", item.name)
+      await tx.insertInto(RoleIncludes.table).values({
+        role: item.name,
+        included,
+      }).onConflict((c) => c.columns(["role", "included"]).doNothing())
         .execute();
-      for (const included of item.includes) {
-        const exists = await tx.selectFrom(Roles.table).select("name").where(
-          "name",
-          "=",
-          included,
-        ).executeTakeFirst();
-        if (!exists) {
-          problems.push(`Role ${item.name} includes missing role ${included}`);
-          continue;
-        }
-        await tx.insertInto(RoleIncludes.table).values({
-          role: item.name,
-          included,
-        }).onConflict((c) => c.columns(["role", "included"]).doNothing())
-          .execute();
-      }
     }
-    const removed = await tx.selectFrom(Roles.table).select("name").where(
-      "managed",
+  }
+  const removed = await tx.selectFrom(Roles.table).select("name").where(
+    "managed",
+    "=",
+    packageId,
+  ).execute();
+  for (const { name } of removed) {
+    if (names.includes(name)) continue;
+    const used = await tx.selectFrom(UserRoles.table).select("role").where(
+      "role",
       "=",
-      packageId,
-    ).execute();
-    for (const { name } of removed) {
-      if (names.includes(name)) continue;
-      const used = await tx.selectFrom(UserRoles.table).select("role").where(
-        "role",
+      name,
+    ).executeTakeFirst() ??
+      await tx.selectFrom(RoleIncludes.table).select("role").where(
+        "included",
         "=",
         name,
-      ).executeTakeFirst() ??
-        await tx.selectFrom(RoleIncludes.table).select("role").where(
-          "included",
-          "=",
-          name,
-        ).executeTakeFirst();
-      if (used) {
-        await tx.updateTable(Roles.table).set({ obsolete: true }).where(
-          "name",
-          "=",
-          name,
-        ).execute();
-      } else {
-        await tx.deleteFrom(RoleIncludes.table).where("role", "=", name)
-          .execute();
-        await tx.deleteFrom(Roles.table).where("name", "=", name).execute();
-      }
+      ).executeTakeFirst();
+    if (used) {
+      await tx.updateTable(Roles.table).set({ obsolete: true }).where(
+        "name",
+        "=",
+        name,
+      ).execute();
+    } else {
+      await tx.deleteFrom(RoleIncludes.table).where("role", "=", name)
+        .execute();
+      await tx.deleteFrom(Roles.table).where("name", "=", name).execute();
     }
-  });
+  }
 }

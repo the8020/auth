@@ -163,6 +163,76 @@ Deno.test("indexing synchronizes managed roles and protects them from edits", as
   }
 });
 
+Deno.test("missing includes fail closed and a complete set resolves roles regardless of package order", async () => {
+  const fixture = await authDatabase();
+  const admin = await import("./admin.ts");
+  const { indexRoles } = await import("./role_declarations.ts");
+  const root = await Deno.makeTempDir({ prefix: "the8020-auth-role-set-" });
+  const consumer =
+    '["fixtures.consumer.user"]\nincludes = ["fixtures.provider.viewer"]\n';
+  const write = async (id: string, text: string) => {
+    await Deno.mkdir(`${root}/${id}/declarations`, { recursive: true });
+    await Deno.writeTextFile(
+      `${root}/${id}/declarations/auth-roles.toml`,
+      text,
+    );
+  };
+  const index = async (ids: string[]) => {
+    const state = { packages: {} as Record<string, { error?: string }> };
+    await indexRoles(state, {
+      packages: ids.map((package_id) => ({
+        package_id,
+        package_commit: "c1",
+        active: true,
+      })),
+    }, new URL(`file://${root}/`));
+    return state;
+  };
+  try {
+    await write("fixtures/consumer", consumer);
+    const missing = await index(["fixtures/consumer"]);
+    assert(
+      missing.packages["fixtures/consumer"]?.error?.includes(
+        "includes missing role fixtures.provider.viewer",
+      ),
+    );
+    assertEquals(
+      (await admin.getRole("fixtures.consumer.user")).managed,
+      "fixtures/consumer",
+    );
+    assertEquals(await admin.includedRoles("fixtures.consumer.user"), []);
+    await assertRejects(() => admin.getRole("fixtures.provider.viewer"));
+
+    await write(
+      "fixtures/provider",
+      '["fixtures.provider.viewer"]\npermissions = { "fixtures.documents.view" = "*" }\n',
+    );
+    assertEquals(
+      (await index(["fixtures/consumer", "fixtures/provider"])).packages,
+      {},
+    );
+    assertEquals(
+      (await admin.includedRoles("fixtures.consumer.user")).map((row) =>
+        row.included
+      ),
+      ["fixtures.provider.viewer"],
+    );
+
+    // A malformed declaration must retain the previous managed roles.
+    await write("fixtures/provider", "invalid = true\n");
+    assert(
+      (await index(["fixtures/provider"])).packages["fixtures/provider"]?.error,
+    );
+    assertEquals(
+      (await admin.getRole("fixtures.provider.viewer")).obsolete,
+      false,
+    );
+  } finally {
+    fixture.close();
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
 Deno.test("copies of managed roles record their origin and adopt template changes", async () => {
   const fixture = await authDatabase();
   const admin = await import("./admin.ts");

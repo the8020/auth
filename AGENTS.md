@@ -312,12 +312,15 @@ outside the catalog child.
   the package prefix `<namespace>.<package>.`; at most 256 roles and 64 includes
   each. The `index-packages` handler makes the selected packages' roles match on
   every activation and full reindex: it upserts declared roles with
-  `managed = <package ID>`, `managedCommit`, and replaces their inclusions;
-  missing included roles are reported, not created. A declared name held by a
-  hand-made or another package's role is reported and never taken over. Roles a
-  package no longer declares (or an inactive package's roles) become `obsolete`
-  while assigned or included, otherwise they are deleted. Problems go to the
-  package's index error; other roles still sync.
+  `managed = <package ID>`, `managedCommit`, and replaces their inclusions; all
+  selected packages' valid roles are created before resolving inclusions, so
+  cross-package includes do not depend on candidate order. Unreadable or
+  malformed declarations preserve that package's previous managed roles; missing
+  included roles are reported, not created. A declared name held by a hand-made
+  or another package's role is reported and never taken over. Roles a package no
+  longer declares (or an inactive package's roles) become `obsolete` while
+  assigned or included, otherwise they are deleted. Problems go to the package's
+  index error; other roles still sync.
 - Role screens and My account localize managed descriptions using the owning
   package’s `declarations.auth-roles.<role>` key. Stored descriptions, copies,
   and user-authored text remain unchanged.
